@@ -320,9 +320,9 @@ impl CpuEngine {
             &[
                 "core-control-unit",
                 "mem-l1-icache",
-                "bus-internal-interconnect",
+                "comm-internal-buses",
             ],
-            &["pc_to_icache", "icache_to_cu"],
+            &["pc_to_l1i", "l1i_to_ir"],
         );
     }
 
@@ -341,8 +341,8 @@ impl CpuEngine {
             ..Default::default()
         };
         self.set_active(
-            &["core-control-unit", "logic-instruction-decoder"],
-            &["cu_control_broadcast"],
+            &["core-control-unit", "core-instruction-decoder"],
+            &["ir_to_decoder", "decoder_to_cu"],
         );
     }
 
@@ -359,11 +359,11 @@ impl CpuEngine {
         match instr.opcode {
             Opcode::LoadImm => {
                 self.latched_op_a = instr.imm;
-                self.set_active(&["core-control-unit"], &["cu_control_broadcast"]);
+                self.set_active(&["core-control-unit"], &["decoder_to_cu"]);
             }
             Opcode::LoadMem => {
                 self.latched_effective_addr = instr.addr;
-                self.set_active(&["core-control-unit"], &["cu_control_broadcast"]);
+                self.set_active(&["core-control-unit"], &["decoder_to_cu"]);
             }
             Opcode::LoadMemIndirect => {
                 let rs = instr.ra.expect("LOAD indirect requires ra");
@@ -372,7 +372,7 @@ impl CpuEngine {
                 self.latched_effective_addr = Some(addr_val);
                 self.set_active(
                     &["core-registers", "core-control-unit"],
-                    &["regfile_to_alu_a"],
+                    &["regs_to_alu_opA"],
                 );
             }
             Opcode::Store => {
@@ -383,7 +383,7 @@ impl CpuEngine {
                 self.mdr = Some(val);
                 self.set_active(
                     &["core-registers", "core-control-unit"],
-                    &["regfile_to_mdr_data"],
+                    &["regs_to_alu_opA", "lsu_to_l1d"],
                 );
             }
             Opcode::StoreIndirect => {
@@ -396,7 +396,7 @@ impl CpuEngine {
                 self.mdr = Some(val);
                 self.set_active(
                     &["core-registers", "core-control-unit"],
-                    &["regfile_to_alu_a", "regfile_to_mdr_data"],
+                    &["regs_to_alu_opA", "regs_to_alu_opB"],
                 );
             }
             Opcode::Mov => {
@@ -404,7 +404,7 @@ impl CpuEngine {
                 self.latched_op_a = Some(self.registers[rs.index()]);
                 self.set_active(
                     &["core-registers", "core-control-unit"],
-                    &["regfile_to_alu_a"],
+                    &["regs_to_alu_opA"],
                 );
             }
             Opcode::Add
@@ -420,11 +420,11 @@ impl CpuEngine {
                 self.latched_op_b = Some(self.registers[rb.index()]);
                 self.set_active(
                     &["core-registers", "core-control-unit"],
-                    &["regfile_to_alu_a", "regfile_to_alu_b"],
+                    &["regs_to_alu_opA", "regs_to_alu_opB"],
                 );
             }
             Opcode::Jmp | Opcode::Jz | Opcode::Jnz | Opcode::Nop | Opcode::Halt => {
-                self.set_active(&["core-control-unit"], &["cu_control_broadcast"]);
+                self.set_active(&["core-control-unit"], &["decoder_to_cu"]);
             }
         }
 
@@ -509,7 +509,7 @@ impl CpuEngine {
                         operand_b: None,
                         result: self.latched_effective_addr,
                     };
-                    self.set_active(&["core-alu", "core-control-unit"], &["alu_to_mar_addr"]);
+                    self.set_active(&["core-alu", "core-control-unit"], &["lsu_to_l1d"]);
                 }
                 Opcode::Jmp => {
                     branch_taken = true;
@@ -517,7 +517,7 @@ impl CpuEngine {
                     self.latched_branch_target = instr.target_pc;
                     self.set_active(
                         &["core-control-unit", "core-alu"],
-                        &["cu_control_broadcast"],
+                        &["decoder_to_cu"],
                     );
                 }
                 Opcode::Jz => {
@@ -526,7 +526,7 @@ impl CpuEngine {
                     self.latched_branch_target = instr.target_pc;
                     self.set_active(
                         &["core-control-unit", "core-alu"],
-                        &["cu_control_broadcast"],
+                        &["decoder_to_cu"],
                     );
                 }
                 Opcode::Jnz => {
@@ -535,11 +535,11 @@ impl CpuEngine {
                     self.latched_branch_target = instr.target_pc;
                     self.set_active(
                         &["core-control-unit", "core-alu"],
-                        &["cu_control_broadcast"],
+                        &["decoder_to_cu"],
                     );
                 }
                 Opcode::Nop | Opcode::Halt => {
-                    self.set_active(&["core-control-unit"], &["cu_control_broadcast"]);
+                    self.set_active(&["core-control-unit"], &["decoder_to_cu"]);
                 }
                 Opcode::Add
                 | Opcode::Sub
@@ -614,11 +614,12 @@ impl CpuEngine {
                 self.set_active(
                     &[
                         "mem-l1-dcache",
-                        "mem-memory-controller",
-                        "mem-ram-interface",
-                        "bus-system-bus",
+                        "core-load-store-unit",
+                        "die-memory-controller",
+                        "mem-main-interface",
+                        "comm-memory-interface",
                     ],
-                    &["mar_mdr_to_dcache"],
+                    &["lsu_to_l1d", "l1d_to_mem_if"],
                 );
             }
             Opcode::Store | Opcode::StoreIndirect => {
@@ -646,15 +647,16 @@ impl CpuEngine {
                 self.set_active(
                     &[
                         "mem-l1-dcache",
-                        "mem-memory-controller",
-                        "mem-ram-interface",
-                        "bus-system-bus",
+                        "core-load-store-unit",
+                        "die-memory-controller",
+                        "mem-main-interface",
+                        "comm-memory-interface",
                     ],
-                    &["mar_mdr_to_dcache"],
+                    &["lsu_to_l1d", "l1d_to_mem_if"],
                 );
             }
             _ => {
-                self.set_active(&["core-control-unit"], &[]);
+                self.set_active(&["core-control-unit"], &["alu_bypass_mem"]);
             }
         }
 
@@ -699,10 +701,10 @@ impl CpuEngine {
                 self.set_active(
                     &[
                         "core-registers",
-                        "bus-internal-interconnect",
+                        "comm-internal-buses",
                         "core-control-unit",
                     ],
-                    &["alu_to_regfile"],
+                    &["alu_to_wb_regs"],
                 );
             }
             Opcode::LoadMem | Opcode::LoadMemIndirect => {
@@ -718,17 +720,17 @@ impl CpuEngine {
                     &[
                         "core-registers",
                         "mem-l1-dcache",
-                        "bus-internal-interconnect",
+                        "comm-internal-buses",
                     ],
-                    &["dcache_to_regfile"],
+                    &["mdr_to_wb_regs"],
                 );
             }
             Opcode::Store | Opcode::StoreIndirect => {
                 self.pc = self.pc.saturating_add(1);
                 self.executed_instructions += 1;
                 self.set_active(
-                    &["mem-l1-dcache", "core-control-unit"],
-                    &["mar_mdr_to_dcache"],
+                    &["mem-l1-dcache", "core-control-unit", "comm-memory-interface"],
+                    &["l1d_to_mem_if"],
                 );
             }
             Opcode::Cmp | Opcode::Nop => {
@@ -744,7 +746,7 @@ impl CpuEngine {
                     self.pc = self.pc.saturating_add(1);
                 }
                 self.executed_instructions += 1;
-                self.set_active(&["core-control-unit"], &["pc_to_icache"]);
+                self.set_active(&["core-control-unit"], &["pc_to_l1i"]);
             }
             Opcode::Halt => {
                 self.executed_instructions += 1;
