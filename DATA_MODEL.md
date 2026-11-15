@@ -442,6 +442,84 @@ export interface LearningPath {
   summary: string;
   steps: LearningPathStep[];
 }
+
+export interface SemiconductorPrimer {
+  id: string;
+  title: string;
+  summary: string;
+  sections: { heading: string; body: string }[];
+  keyTakeaways: string[];
+  relatedComponentIds: string[];
+  citationIds: string[];
+}
+
+export interface ArchitectureReference {
+  id: string;
+  title: string;
+  summary: string;
+  comparisonRows: Record<string, string>[];
+  scopeDisclaimer: string;
+  citationIds: string[];
+}
+
+export interface TechnicalDiagramEntry {
+  id: string;
+  title: string;
+  svgAssetPath: string;
+  caption: string;
+  relatedComponentIds: string[];
+  citationIds: string[];
+}
+
+// --- API Transport & Telemetry DTOs (aligned with API_CONTRACT.md) ---
+
+export interface HealthResponse {
+  status: "ok" | "degraded";
+  service: "tianedge-api";
+  version: string;
+  datasetCounts: {
+    components: number;
+    insights: number;
+    glossaryTerms: number;
+    fundamentals: number;
+    references: number;
+    diagrams: number;
+    formulas: number;
+    learningPaths: number;
+  };
+}
+
+export interface LibrarySearchItem {
+  kind: "component" | "insight" | "glossary" | "formula" | "fundamental" | "reference" | "diagram";
+  id: string;
+  title: string;
+  snippet: string;
+  route: string;
+  relatedComponentIds: string[];
+  score: number;
+}
+
+export interface LibrarySearchResponse {
+  query: string;
+  total: number;
+  results: LibrarySearchItem[];
+}
+
+export interface AnalyticsEventRequest {
+  eventType: "section_viewed" | "component_selected" | "mode_changed" | "journey_completed" | "simulator_preset_run" | "insight_opened";
+  section: "overview" | "anatomy" | "journey" | "simulator" | "insights" | "library";
+  targetId: string;
+  sessionId: string;
+  timestampUtc: string;
+}
+
+export interface ApiErrorResponse {
+  error: {
+    code: string;
+    message: string;
+    details: unknown | null;
+  };
+}
 ```
 
 ---

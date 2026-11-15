@@ -49,6 +49,9 @@ All `4xx` / `5xx` errors return a uniform envelope:
     "components": 36,
     "insights": 13,
     "glossaryTerms": 48,
+    "fundamentals": 5,
+    "references": 3,
+    "diagrams": 6,
     "formulas": 6,
     "learningPaths": 4
   }
@@ -122,7 +125,7 @@ All `4xx` / `5xx` errors return a uniform envelope:
 - **Purpose:** Perform weighted case-insensitive search across Components, Engineering Insights, Glossary Terms, Formulas, and Semiconductor Fundamentals.
 - **Query Parameters:**
   - `q` (required `string`, `minLength=1`, `maxLength=100`)
-  - `category` (optional: `all | component | insight | glossary | formula | fundamental`)
+  - `category` (optional: `all | component | insight | glossary | formula | fundamental | reference | diagram`)
   - `limit` (optional `integer`, default `20`, range `1..50`)
 - **Validation:** Empty or whitespace-only `q` returns `400 Bad Request` (`INVALID_SEARCH_QUERY`).
 - **Response (`200 OK`):**
@@ -152,6 +155,9 @@ All `4xx` / `5xx` errors return a uniform envelope:
 | Method & Path | Purpose | Query Params | Success Response |
 |---|---|---|---|
 | `GET /api/v1/library/glossary` | Retrieve glossary terms | `category` (opt), `letter` (opt) | `200 OK`: `{ total, items: GlossaryTerm[] }` |
+| `GET /api/v1/library/fundamentals` | Retrieve semiconductor fundamentals primers | None | `200 OK`: `{ total, items: SemiconductorPrimer[] }` |
+| `GET /api/v1/library/references` | Retrieve CPU architecture reference matrices | None | `200 OK`: `{ total, items: ArchitectureReference[] }` |
+| `GET /api/v1/library/diagrams` | Retrieve vector diagram metadata & component callouts | None | `200 OK`: `{ total, items: TechnicalDiagramEntry[] }` |
 | `GET /api/v1/library/formulas` | Retrieve canonical equations with variables, units, assumptions | `insightId` (opt) | `200 OK`: `{ total, items: FormulaEntry[] }` |
 | `GET /api/v1/library/learning-paths` | Retrieve guided curricula paths | `difficulty` (opt) | `200 OK`: `{ total, items: LearningPath[] }` |
 | `GET /api/v1/library/citations` | Retrieve verified source attribution bibliography | None | `200 OK`: `{ total, items: CitationEntry[] }` |

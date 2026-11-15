@@ -65,7 +65,7 @@ The following engineering decisions were established during specification design
 
 ### ED-05 — Strict Naming Convention (`TIANEDGE`)
 
-- **Decision:** Use the exact uppercase project name **`TIANEDGE`** across documentation, UI headers, crate names (`tianedge-cpu`), package titles, and repository identifiers. Former candidate names (`CHIPCORE`, `TIANEX`) are retired and must never appear in product documentation or code.
+- **Decision:** Use the exact uppercase project name **`TIANEDGE`** across documentation, UI headers, crate names (`tianedge-cpu`), package titles, and repository identifiers. Retired legacy candidate names must never be substituted or used anywhere in product documentation or code.
 
 ---
 

@@ -127,7 +127,7 @@ STORE R3, 100
 
 | Error Category | Trigger Condition | Structured Error Code | Engine Behavior |
 |---|---|---|---|
-| **Syntax / Parse Errors** | Unknown mnemonic, invalid register (`R8`), missing operand, duplicate label, undefined jump label, program > 256 lines | `UNKNOWN_OPCODE`, `INVALID_REGISTER`, `SYNTAX_ERROR`, `UNDEFINED_LABEL`, `PROGRAM_TOO_LARGE` | Program rejected prior to execution; returns `Vec<ParseError>` with exact `line` (1-indexed), `column`, and human remediation message. |
+| **Syntax / Parse Errors** | Unknown mnemonic, invalid register (`R8`), missing operand, duplicate label, undefined jump label, program > 256 lines | `UNKNOWN_OPCODE`, `INVALID_REGISTER`, `SYNTAX_ERROR`, `DUPLICATE_LABEL`, `UNDEFINED_LABEL`, `PROGRAM_TOO_LARGE` | Program rejected prior to execution; returns `Vec<ParseError>` with exact `line` (1-indexed), `column`, and human remediation message. |
 | **Memory Bounds Fault** | `LOAD [addr]` / `STORE Rs, addr` evaluates `addr < 0` or `addr >= 256` | `MEMORY_OUT_OF_BOUNDS` | Halts cleanly at `MEMORY_ACCESS` stage; sets `status = "fault"`, leaves memory untouched. |
 | **Jump Target Fault** | `JMP` / `JZ` / `JNZ` targets instruction index outside `0..program.len()` | `INVALID_JUMP_TARGET` | Halts cleanly at `EXECUTE` stage with `status = "fault"`. |
 | **Cycle Watchdog Guard** | Infinite loop exceeds `MAX_CYCLES_PER_RUN` (`10,000` cycles) during continuous `Run` | `CYCLE_LIMIT_REACHED` | Pauses cleanly in `status = "paused"` with informative warning so browser thread never hangs; user may `Step` or `Reset`. |
