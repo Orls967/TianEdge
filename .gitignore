@@ -58,6 +58,9 @@ yarn-error.log*
 .temp/
 .cache/
 .vite/
+test-results/
+playwright-report/
+blob-report/
 
 # OS temporary files
 Thumbs.db

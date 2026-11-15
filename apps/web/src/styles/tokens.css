@@ -1,0 +1,107 @@
+:root {
+  /* Backgrounds — Dark Graphite Optical Stage */
+  --bg-canvas: #070A10;
+  --bg-surface: #0D121C;
+  --bg-surface-elevated: #141B29;
+  --bg-surface-glass: rgba(13, 18, 28, 0.84);
+
+  /* Borders & Hairlines */
+  --border-subtle: rgba(148, 163, 184, 0.16);
+  --border-active: rgba(0, 229, 255, 0.55);
+
+  /* Brand & Functional Accents */
+  --accent-primary: #00E5FF;
+  --accent-signal: #22D3EE;
+  --accent-secondary: #1E40AF;
+  --accent-secondary-soft: #1D4ED8;
+  --accent-warm-gold: #FBBF24;
+
+  /* Typography */
+  --text-primary: #F8FAFC;
+  --text-secondary: #CBD5E1;
+  --text-muted: #94A3B8;
+
+  /* Semantic Status */
+  --status-success: #10B981;
+  --status-warning: #F59E0B;
+  --status-error: #EF4444;
+
+  /* Font Stacks */
+  --font-display: 'Space Grotesk', 'Inter', system-ui, -apple-system, sans-serif;
+  --font-body: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  /* Type Scale */
+  --text-hero: clamp(2rem, 3.5vw, 3.25rem);
+  --text-h2: 1.5rem;
+  --text-h3: 1.125rem;
+  --text-body: 0.9375rem;
+  --text-mono-sm: 0.8125rem;
+  --text-caption: 0.75rem;
+
+  /* Spacing (4px baseline grid) */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-12: 48px;
+
+  /* Layout */
+  --nav-height: 56px;
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+  background-color: var(--bg-canvas);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: var(--text-body);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-display);
+  margin: 0;
+  letter-spacing: -0.015em;
+}
+
+code,
+pre,
+.mono {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+a {
+  color: var(--accent-primary);
+  text-decoration: none;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 2px;
+}
