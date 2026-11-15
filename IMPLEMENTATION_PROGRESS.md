@@ -9,11 +9,11 @@
 
 ## 1. Current Status Overview
 
-- **Current Phase:** Phase 1 Complete -> Proceeding to Phase 2 (Design System & Application Shell)
-- **Completed Phases:** Phase 0 (Documentation), Phase 1 (Monorepo & Tooling Foundation)
-- **Active Milestone:** L1 Complete
-- **Latest Local Commit:** Pending L1 commit
-- **Latest Pushed Commit:** `3be0b51` (baseline)
+- **Current Phase:** Phase 2 Complete -> Proceeding to Phase 3 (Canonical Content Bundle & Static JSON)
+- **Completed Phases:** Phase 0 (Documentation), Phase 1 (Monorepo Foundation), Phase 2 (Design System & App Shell)
+- **Active Milestone:** L2 Complete
+- **Latest Local Commit:** Pending L2 commit
+- **Latest Pushed Commit:** `a57e082` (L1)
 - **Deployment Status:** Not yet deployed (planned after Phase 10 verification)
 
 ---
@@ -24,8 +24,8 @@
 |---|---|---|---|
 | Phase 0 | Documentation & Specs | Completed | `3be0b51` |
 | Phase 1 | Repository & Application Foundation | Completed | `apps/web`, `crates/tianedge-cpu`, `services/api`, `.github/workflows/ci.yml`, all baseline gates passing |
-| Phase 2 | Design System & App Shell | Next | Dark graphite + cyan/gold design tokens, 6-route laboratory shell, a11y controls |
-| Phase 3 | Interactive 3D Chip Anatomy & Metadata | Pending | — |
+| Phase 2 | Design System & App Shell | Completed | Canonical TS models (`DATA_MODEL.md`), dark graphite/cyan/gold design tokens, accessible `AppShell`, UI primitives |
+| Phase 3 | Interactive 3D Chip Anatomy & Metadata | In Progress | Populating 36 components, 13 insights, library & citations JSON |
 | Phase 4 | Idle & Guided Animation System | Pending | — |
 | Phase 5 | CPU Execution Engine (`TIAN-ISA v1` Rust) | Pending | — |
 | Phase 6 | WASM & Web Worker Integration | Pending | — |
