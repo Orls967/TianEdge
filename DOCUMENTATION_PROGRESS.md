@@ -3,7 +3,7 @@
 **Project:** TIANEDGE — Semiconductor & Microprocessor Exploration Platform  
 **Repository:** `https://github.com/Orls967/TianEdge.git` (Branch: `main`)  
 **Phase:** Phase 0 — Complete Documentation Engineering & Specification Authoring  
-**Status:** In Progress (`L2` Complete → Moving to `L3`)  
+**Status:** In Progress (`L3` Complete → Moving to `L4`)  
 **Last Updated:** 2026-11-16
 
 ---
@@ -18,10 +18,10 @@
 | 3 | `ARCHITECTURE.md` | L2 | Completed | TS/Rust-WASM/Python architecture, workers, fallback strategy |
 | 4 | `constraints.md` | L2 | Completed | 15 core engineering constraints + 5 derived engineering decisions |
 | 5 | `flow.md` | L2 | Completed | 10-phase implementation roadmap & dependency graph |
-| 6 | `CHIP_ANATOMY_SPEC.md` | L3 | Pending | 6 groups, 36 components, 15-field schema each |
-| 7 | `DESIGN.md` | L3 | Pending | Visual direction, tokens, UI layout, accessibility |
-| 8 | `ASSET_GUIDELINES.md` | L3 | Pending | GLB/glTF, PBR materials, conceptual vs physical geometry |
-| 9 | `ANIMATION_SPEC.md` | L3 | Pending | Idle & guided animations, reduced-motion, state coupling |
+| 6 | `CHIP_ANATOMY_SPEC.md` | L3 | Completed | 6 groups, 36 components, complete 15-field engineering specs |
+| 7 | `DESIGN.md` | L3 | Completed | Visual direction, CSS tokens, 6-page layout, WCAG AA & a11y |
+| 8 | `ASSET_GUIDELINES.md` | L3 | Completed | GLB/glTF + procedural tiers, mesh naming contract, budgets |
+| 9 | `ANIMATION_SPEC.md` | L3 | Completed | Idle + guided animations, reduced-motion, 6-stage sync |
 | 10 | `SIMULATION_SPEC.md` | L4 | Pending | TIAN-ISA v1, 6-stage deterministic CPU engine, WASM interface |
 | 11 | `INSTRUCTION_JOURNEY_SPEC.md` | L4 | Pending | Guided 6-stage walkthrough aligned with CPU simulator |
 | 12 | `ENGINEERING_CONTENT_SPEC.md` | L4 | Pending | 13 Engineering Insights topics + Technical Library specs |
@@ -66,11 +66,12 @@ Authoritative textbooks and official technical references used throughout specif
 | Milestone | Commit Hash | Message | Push Status |
 |---|---|---|---|
 | L1 | `5e1a2b7` | `chore: initialize TIANEDGE gitignore and progress tracker` | Pushed to `origin/main` |
-| L2 | Pending | `docs: define product requirements, architecture, constraints, and roadmap` | Pending |
+| L2 | `17c6273` | `docs: define product requirements, architecture, constraints, and roadmap` | Pushed to `origin/main` |
+| L3 | Pending | `docs: specify chip anatomy, design system, 3D assets, and animations` | Pending |
 
 ---
 
 ## 5. Next Actions
 
-1. Author L3 documents: `CHIP_ANATOMY_SPEC.md`, `DESIGN.md`, `ASSET_GUIDELINES.md`, and `ANIMATION_SPEC.md`.
-2. Update `DOCUMENTATION_PROGRESS.md`, commit, and push L3 milestone.
+1. Author L4 documents: `SIMULATION_SPEC.md`, `INSTRUCTION_JOURNEY_SPEC.md`, and `ENGINEERING_CONTENT_SPEC.md`.
+2. Update `DOCUMENTATION_PROGRESS.md`, commit, and push L4 milestone.
