@@ -1,0 +1,113 @@
+[
+  {
+    "id": "isa-philosophy-matrix",
+    "title": "ISA Architecture Comparison Matrix (Educational TIAN-ISA v1 vs. RISC & CISC Concepts)",
+    "summary": "Contrasts TIAN-ISA v1 educational abstractions against general RISC and CISC architectural principles without claiming commercial silicon equivalence.",
+    "comparisonRows": [
+      {
+        "dimension": "Memory Organization",
+        "tianIsa": "Modified Harvard (256-word InstMem + 256-word DataMem)",
+        "generalRisc": "Von Neumann unified DRAM + split L1i/L1d caches",
+        "generalCisc": "Von Neumann unified DRAM + split L1i/L1d caches"
+      },
+      {
+        "dimension": "Execution Model",
+        "tianIsa": "Sequential 6-stage deterministic (CPI = 6)",
+        "generalRisc": "Pipelined / Superscalar Out-of-Order (CPI <= 1)",
+        "generalCisc": "Decode to fixed micro-ops + Superscalar OoO engine"
+      },
+      {
+        "dimension": "Arithmetic Operands",
+        "tianIsa": "Register-to-Register (Load-Store style)",
+        "generalRisc": "Strict Load-Store (ALU operates on registers)",
+        "generalCisc": "Register-Memory & Memory-Memory instructions allowed"
+      },
+      {
+        "dimension": "Register File",
+        "tianIsa": "8 x 32-bit writable GPRs (R0-R7) + PC, IR, MAR, MDR, FLAGS",
+        "generalRisc": "Typically 32 GPRs (e.g., x0 hardwired zero in RISC-V)",
+        "generalCisc": "8-16+ architectural GPRs backed by large rename files"
+      }
+    ],
+    "scopeDisclaimer": "TIAN-ISA v1 is an original educational ISA designed for visual datapath clarity; commercial RISC and CISC columns summarize general textbook traits rather than specific vendor parts.",
+    "citationIds": ["hennessy_patterson_6e", "patterson_ditzel_risc"]
+  },
+  {
+    "id": "memory-hierarchy-orders",
+    "title": "Memory Hierarchy Latency, Capacity & Technology Orders of Magnitude",
+    "summary": "Reference table contrasting storage technologies across CPU registers, SRAM caches, and external DRAM.",
+    "comparisonRows": [
+      {
+        "tier": "Tier 0: Register File",
+        "technology": "Multi-ported Flip-Flop / 8T SRAM",
+        "typicalCapacity": "Hundreds of Bytes (TIAN-ISA: 32 B)",
+        "typicalLatency": "< 1 cycle (< 0.5 ns)"
+      },
+      {
+        "tier": "Tier 1: L1i / L1d Cache",
+        "technology": "High-speed 6T SRAM (split Harvard)",
+        "typicalCapacity": "32 - 64 KB per core",
+        "typicalLatency": "~4 - 5 cycles (~1 ns)"
+      },
+      {
+        "tier": "Tier 2: L2 Cache",
+        "technology": "Medium-density 6T SRAM (unified)",
+        "typicalCapacity": "256 KB - 2+ MB per core",
+        "typicalLatency": "~10 - 15 cycles (~3 - 5 ns)"
+      },
+      {
+        "tier": "Tier 3: L3 Cache (LLC)",
+        "technology": "High-density sliced SRAM",
+        "typicalCapacity": "8 - 128+ MB shared",
+        "typicalLatency": "~30 - 60 cycles (~10 - 20 ns)"
+      },
+      {
+        "tier": "Tier 4: Main Memory (DRAM)",
+        "technology": "1T1C Capacitor DRAM (off-die)",
+        "typicalCapacity": "8 - 512+ GB",
+        "typicalLatency": "~150 - 300+ cycles (~50 - 100 ns)"
+      }
+    ],
+    "scopeDisclaimer": "Capacity and latency figures represent general desktop/server orders of magnitude from computer architecture literature, not fixed vendor benchmarks.",
+    "citationIds": ["hennessy_patterson_6e", "bryant_ohallaron_csapp", "jacob_ng_wang_mem"]
+  },
+  {
+    "id": "stage-mapping-reference",
+    "title": "TIANEDGE 6-Stage Educational Model vs. Classic 5-Stage RISC Pipeline",
+    "summary": "Explains why TIANEDGE separates REGISTER_READ from DECODE for unambiguous 3D component tracing.",
+    "comparisonRows": [
+      {
+        "tianedgeStage": "1. FETCH",
+        "classic5Stage": "IF (Instruction Fetch)",
+        "primaryComponents": "core-registers (PC), mem-l1-icache, core-instruction-decoder (IR)"
+      },
+      {
+        "tianedgeStage": "2. DECODE",
+        "classic5Stage": "ID (Instruction Decode)",
+        "primaryComponents": "core-instruction-decoder, core-control-unit"
+      },
+      {
+        "tianedgeStage": "3. REGISTER_READ",
+        "classic5Stage": "ID (Register File Read half-cycle)",
+        "primaryComponents": "core-registers, mem-register-file, comm-data-paths"
+      },
+      {
+        "tianedgeStage": "4. EXECUTE",
+        "classic5Stage": "EX (Execute / Address Calc)",
+        "primaryComponents": "core-alu, core-execution-units, core-control-unit"
+      },
+      {
+        "tianedgeStage": "5. MEMORY_ACCESS",
+        "classic5Stage": "MEM (Data Memory Access)",
+        "primaryComponents": "core-load-store-unit, mem-l1-dcache, comm-memory-interface"
+      },
+      {
+        "tianedgeStage": "6. WRITE_BACK",
+        "classic5Stage": "WB (Register Write Back)",
+        "primaryComponents": "core-registers, mem-register-file, core-control-unit"
+      }
+    ],
+    "scopeDisclaimer": "TIANEDGE executes one instruction across these 6 stages sequentially (CPI = 6) for visual clarity; hardware pipelining is covered comparatively in Engineering Insights.",
+    "citationIds": ["patterson_hennessy_cod", "harris_harris_ddca"]
+  }
+]

@@ -1,0 +1,107 @@
+[
+  {
+    "id": "silicon-crystal-doping",
+    "title": "Monocrystalline Silicon & Semiconductor Doping",
+    "summary": "How ultra-pure silicon crystals are selectively doped into n-type and p-type regions to form voltage-controlled MOSFET switches.",
+    "sections": [
+      {
+        "heading": "Crystal Lattice Purity",
+        "body": "Modern integrated circuits begin with Czochralski-grown monocrystalline silicon boules sliced into polished wafers. Extreme crystal regularity prevents lattice defects from trapping charge carriers or causing leakage currents across billions of neighboring devices."
+      },
+      {
+        "heading": "N-Type and P-Type Regions",
+        "body": "Introducing Group V donor impurities (such as phosphorus or arsenic) creates electron-rich n-type silicon, while Group III acceptors (such as boron) create hole-rich p-type silicon. Selective ion implantation builds the complementary NMOS and PMOS transistor wells underpinning CMOS logic."
+      }
+    ],
+    "keyTakeaways": [
+      "Intrinsic silicon is an intermediate semiconductor whose conductivity can be tuned by orders of magnitude via doping.",
+      "Complementary NMOS (electron channel) and PMOS (hole channel) devices enable near-zero static current in steady CMOS logic states."
+    ],
+    "relatedComponentIds": ["pkg-silicon-die", "logic-transistors"],
+    "citationIds": ["weste_harris_cmos", "harris_harris_ddca"]
+  },
+  {
+    "id": "photolithography-overview",
+    "title": "Photolithography & Multi-Layer Interconnect Stack",
+    "summary": "Conceptual overview of how optical patterning builds active FEOL transistors and multi-layer BEOL metal wiring.",
+    "sections": [
+      {
+        "heading": "Front-End-of-Line (FEOL) Device Layer",
+        "body": "Deep-ultraviolet (DUV) and extreme-ultraviolet (EUV) lithography project circuit masks onto photoresist-coated wafers, etching nanoscale fin/nanosheet channels and gate stacks directly onto the active silicon surface."
+      },
+      {
+        "heading": "Back-End-of-Line (BEOL) Metal Routing",
+        "body": "Above the active transistor layer, 10 to 15+ stacked dielectric and copper/cobalt metal layers route local cell connections (thin lower layers) up to low-resistance global power grids and clock trees (thicker upper layers)."
+      }
+    ],
+    "keyTakeaways": [
+      "TIANEDGE visualizes die-level architectural regions rather than physical lithography physics.",
+      "Upper BEOL layers carry power, ground, and H-tree clock networks across the die."
+    ],
+    "relatedComponentIds": ["pkg-silicon-die", "die-interconnect", "comm-clock-distribution"],
+    "citationIds": ["weste_harris_cmos", "tummala_packaging"]
+  },
+  {
+    "id": "cmos-switch-principle",
+    "title": "The Complementary CMOS Switch Principle",
+    "summary": "Why pairing PMOS pull-up and NMOS pull-down networks yields clean rail-to-rail binary logic with high noise margins.",
+    "sections": [
+      {
+        "heading": "Pull-Up vs. Pull-Down Networks",
+        "body": "In a static CMOS gate, a PMOS network connects the output to VDD when inputs are LOW, while a complementary NMOS network connects the output to VSS (GND) when inputs are HIGH. Exactly one network conducts in steady state."
+      },
+      {
+        "heading": "Energy Dissipation During Transitions",
+        "body": "Power is consumed predominantly when charging or discharging node capacitance during 0->1 and 1->0 transitions (P_dyn = alpha * C * V_DD^2 * f), plus small sub-threshold leakage currents."
+      }
+    ],
+    "keyTakeaways": [
+      "Static CMOS eliminates steady-state short-circuit paths between VDD and ground.",
+      "Dynamic switching power scales quadratically with supply voltage V_DD."
+    ],
+    "relatedComponentIds": ["logic-transistors", "logic-gates", "core-alu"],
+    "citationIds": ["weste_harris_cmos", "mano_ciletti"]
+  },
+  {
+    "id": "package-assembly-stack",
+    "title": "CPU Package Assembly Stack (LGA to IHS)",
+    "summary": "How the multi-layer organic substrate, C4 flip-chip bumps, silicon die, TIM, and nickel-plated IHS work together electrically and thermally.",
+    "sections": [
+      {
+        "heading": "Electrical Fan-Out Path",
+        "body": "Motherboard socket contacts press onto gold LGA pads under the package substrate. Internal build-up copper planes fan these connections inward to dense C4 micro-solder bumps feeding power and high-speed signals directly across the silicon die face."
+      },
+      {
+        "heading": "Mechanical & Thermal Protection",
+        "body": "Because thinned monocrystalline silicon is brittle and generates intense heat density, a thermal interface material (TIM) couples the die backside to a thick copper-nickel Integrated Heat Spreader (IHS) sealed to the substrate perimeter."
+      }
+    ],
+    "keyTakeaways": [
+      "Flip-chip C4 area-array bumps drastically reduce power-rail inductance compared with edge wire bonding.",
+      "The IHS spreads localized core heat flux over a wide cooler contact plane."
+    ],
+    "relatedComponentIds": ["pkg-ihs", "pkg-silicon-die", "pkg-solder-bumps", "pkg-substrate", "pkg-electrical-contacts"],
+    "citationIds": ["tummala_packaging", "jedec_thermal"]
+  },
+  {
+    "id": "interconnect-scaling",
+    "title": "On-Die Interconnect Scaling & Signal Delay",
+    "summary": "Why long metal wires—not just transistor switching speed—govern modern multi-core communication and clock distribution.",
+    "sections": [
+      {
+        "heading": "Wire RC Delay & Repeaters",
+        "body": "As feature sizes shrink, wire cross-sections narrow, raising resistance per unit length while tight spacing raises coupling capacitance. Long cross-die buses require buffered repeater inverters and pipelined router hops."
+      },
+      {
+        "heading": "From Shared Buses to NoC Fabrics",
+        "body": "Single shared buses saturate quickly beyond a few cores. Modern processors deploy bidirectional ring interconnects or 2D mesh Networks-on-Chip (NoC) with packetized flits and coherence directories."
+      }
+    ],
+    "keyTakeaways": [
+      "Moving data across silicon often costs more energy and latency than performing the arithmetic itself.",
+      "On-die ring and mesh fabrics scale bisection bandwidth cleanly with core count."
+    ],
+    "relatedComponentIds": ["die-interconnect", "comm-interconnect-network", "comm-internal-buses"],
+    "citationIds": ["dally_towles_noc", "weste_harris_cmos"]
+  }
+]

@@ -1,0 +1,79 @@
+[
+  {
+    "id": "6-stage-core-datapath",
+    "title": "TIANEDGE 6-Stage Core Datapath & Control Topology",
+    "svgAssetPath": "diagrams/6-stage-core-datapath.svg",
+    "caption": "Shows data buses (cyan) and control assertions (warm gold) across FETCH, DECODE, REGISTER_READ, EXECUTE, MEMORY_ACCESS, and WRITE_BACK.",
+    "interactiveCallouts": [
+      { "label": "L1i Fetch", "componentId": "mem-l1-icache", "description": "Supplies instruction word indexed by PC." },
+      { "label": "Decoder & Control", "componentId": "core-control-unit", "description": "Generates gold control enables per stage." },
+      { "label": "ALU Core", "componentId": "core-alu", "description": "Executes 32-bit ops and emits Z/N/C/V flags." },
+      { "label": "Load/Store Bridge", "componentId": "core-load-store-unit", "description": "Interfaces MAR/MDR with L1d and Data Memory." }
+    ],
+    "relatedComponentIds": ["mem-l1-icache", "core-instruction-decoder", "core-control-unit", "core-registers", "core-alu", "core-load-store-unit", "mem-l1-dcache"],
+    "citationIds": ["patterson_hennessy_cod", "harris_harris_ddca"]
+  },
+  {
+    "id": "modified-harvard-memory-map",
+    "title": "Modified Harvard Educational Memory Map",
+    "svgAssetPath": "diagrams/modified-harvard-memory-map.svg",
+    "caption": "Illustrates separate InstructionMemory[0..255] and DataMemory[0..255] spaces in TIAN-ISA v1 versus unified DRAM.",
+    "interactiveCallouts": [
+      { "label": "Instruction Space", "componentId": "mem-l1-icache", "description": "Read-only by PC during FETCH." },
+      { "label": "Data Space", "componentId": "mem-l1-dcache", "description": "Read/written via MAR/MDR during MEMORY_ACCESS." }
+    ],
+    "relatedComponentIds": ["mem-l1-icache", "mem-l1-dcache", "mem-main-interface", "comm-memory-interface"],
+    "citationIds": ["patterson_hennessy_cod", "hennessy_patterson_6e"]
+  },
+  {
+    "id": "package-cross-section",
+    "title": "CPU Flip-Chip Package Vertical Stack Cross-Section",
+    "svgAssetPath": "diagrams/package-cross-section.svg",
+    "caption": "Cross-sectional stack from motherboard LGA contacts through ABF substrate, C4 solder bumps, silicon die, TIM, and copper-nickel IHS.",
+    "interactiveCallouts": [
+      { "label": "IHS Lid", "componentId": "pkg-ihs", "description": "Distributes die heat flux to external cooler." },
+      { "label": "Silicon Die", "componentId": "pkg-silicon-die", "description": "Active FEOL transistors and BEOL routing." },
+      { "label": "C4 Solder Bumps", "componentId": "pkg-solder-bumps", "description": "Area-array flip-chip interconnects." },
+      { "label": "Organic Substrate", "componentId": "pkg-substrate", "description": "Multi-layer HDI fan-out PCB." },
+      { "label": "LGA Pads", "componentId": "pkg-electrical-contacts", "description": "Gold-plated motherboard socket pads." }
+    ],
+    "relatedComponentIds": ["pkg-ihs", "pkg-silicon-die", "pkg-solder-bumps", "pkg-substrate", "pkg-electrical-contacts"],
+    "citationIds": ["tummala_packaging", "weste_harris_cmos"]
+  },
+  {
+    "id": "cmos-inverter",
+    "title": "Complementary CMOS Inverter (PMOS Pull-Up + NMOS Pull-Down)",
+    "svgAssetPath": "diagrams/cmos-inverter.svg",
+    "caption": "Enlarged conceptual schematic showing how complementary PMOS and NMOS transistors invert binary input A to output Y.",
+    "interactiveCallouts": [
+      { "label": "MOSFET Switch", "componentId": "logic-transistors", "description": "Voltage-controlled gate conduction." },
+      { "label": "Boolean Gate", "componentId": "logic-gates", "description": "Complementary pull-up / pull-down logic." }
+    ],
+    "relatedComponentIds": ["logic-transistors", "logic-gates"],
+    "citationIds": ["weste_harris_cmos", "harris_harris_ddca"]
+  },
+  {
+    "id": "h-tree-clock-network",
+    "title": "Balanced H-Tree Synchronous Clock Distribution Network",
+    "svgAssetPath": "diagrams/h-tree-clock-network.svg",
+    "caption": "Equal-path fractal H-tree geometry ensuring simultaneous rising clock edges reach core registers and flip-flops with minimal skew.",
+    "interactiveCallouts": [
+      { "label": "Clock Distribution", "componentId": "comm-clock-distribution", "description": "PLL + balanced H-tree branches." },
+      { "label": "Flip-Flops", "componentId": "logic-flip-flops", "description": "Edge-triggered sequential latches." }
+    ],
+    "relatedComponentIds": ["comm-clock-distribution", "logic-flip-flops", "die-cpu-cores"],
+    "citationIds": ["weste_harris_cmos", "harris_harris_ddca"]
+  },
+  {
+    "id": "pipeline-gantt-chart",
+    "title": "Sequential Execution (CPI = 6) vs. Pipelined Overlap (Ideal CPI = 1)",
+    "svgAssetPath": "diagrams/pipeline-gantt-chart.svg",
+    "caption": "Contrasts TIANEDGE's sequential 6-stage educational stepping against steady-state hardware pipelining and RAW forwarding.",
+    "interactiveCallouts": [
+      { "label": "Sequential Core", "componentId": "core-execution-units", "description": "1 instruction completes all 6 stages before next begins." },
+      { "label": "Pipeline Latches", "componentId": "logic-flip-flops", "description": "Separate concurrent hardware stages in pipelined CPUs." }
+    ],
+    "relatedComponentIds": ["core-instruction-decoder", "core-alu", "logic-flip-flops", "comm-data-paths"],
+    "citationIds": ["patterson_hennessy_cod", "hennessy_patterson_6e"]
+  }
+]

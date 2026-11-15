@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 340" role="img" aria-label="Balanced H-Tree Clock Network">
+  <rect width="880" height="340" fill="#070A10" rx="10"/>
+  <rect x="16" y="16" width="848" height="308" fill="#0D121C" stroke="#334155" stroke-width="1" rx="8"/>
+  <text x="36" y="46" fill="#F8FAFC" font-family="Inter, sans-serif" font-size="16" font-weight="700">Balanced H-Tree Synchronous Clock Distribution Network</text>
+  <g stroke="#22D3EE" stroke-width="3" fill="none">
+    <line x1="240" y1="180" x2="640" y2="180"/>
+    <line x1="240" y1="100" x2="240" y2="260"/>
+    <line x1="640" y1="100" x2="640" y2="260"/>
+    <line x1="160" y1="100" x2="320" y2="100"/>
+    <line x1="160" y1="260" x2="320" y2="260"/>
+    <line x1="560" y1="100" x2="720" y2="100"/>
+    <line x1="560" y1="260" x2="720" y2="260"/>
+  </g>
+  <circle cx="440" cy="180" r="18" fill="#141B29" stroke="#FBBF24" stroke-width="2"/>
+  <text x="440" y="184" fill="#FBBF24" font-family="monospace" font-size="11" text-anchor="middle">PLL</text>
+  <g fill="#00E5FF">
+    <circle cx="160" cy="100" r="6"/><circle cx="320" cy="100" r="6"/>
+    <circle cx="160" cy="260" r="6"/><circle cx="320" cy="260" r="6"/>
+    <circle cx="560" cy="100" r="6"/><circle cx="720" cy="100" r="6"/>
+    <circle cx="560" cy="260" r="6"/><circle cx="720" cy="260" r="6"/>
+  </g>
+  <text x="440" y="304" fill="#94A3B8" font-family="sans-serif" font-size="12" text-anchor="middle">Equal wire-length branches deliver synchronized rising CLK edges with minimal skew</text>
+</svg>

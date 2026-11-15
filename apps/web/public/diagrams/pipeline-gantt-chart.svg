@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 340" role="img" aria-label="Sequential vs Pipelined Execution Gantt Chart">
+  <rect width="880" height="340" fill="#070A10" rx="10"/>
+  <rect x="16" y="16" width="848" height="308" fill="#0D121C" stroke="#334155" stroke-width="1" rx="8"/>
+  <text x="36" y="46" fill="#F8FAFC" font-family="Inter, sans-serif" font-size="16" font-weight="700">Sequential Simulator (CPI = 6) vs. Hardware Pipeline Overlap (Ideal CPI = 1)</text>
+  <text x="36" y="88" fill="#FBBF24" font-family="monospace" font-size="12">TIAN-ISA v1 Educational Simulator (Sequential):</text>
+  <g font-family="monospace" font-size="11" text-anchor="middle">
+    <rect x="40" y="100" width="70" height="28" fill="#1E40AF" stroke="#00E5FF"/><text x="75" y="118" fill="#F8FAFC">F</text>
+    <rect x="112" y="100" width="70" height="28" fill="#1E40AF" stroke="#00E5FF"/><text x="147" y="118" fill="#F8FAFC">D</text>
+    <rect x="184" y="100" width="70" height="28" fill="#1E40AF" stroke="#00E5FF"/><text x="219" y="118" fill="#F8FAFC">RR</text>
+    <rect x="256" y="100" width="70" height="28" fill="#1E40AF" stroke="#00E5FF"/><text x="291" y="118" fill="#F8FAFC">EX</text>
+    <rect x="328" y="100" width="70" height="28" fill="#141B29" stroke="#F59E0B"/><text x="363" y="118" fill="#F59E0B">MEM</text>
+    <rect x="400" y="100" width="70" height="28" fill="#1E40AF" stroke="#00E5FF"/><text x="435" y="118" fill="#F8FAFC">WB</text>
+    <rect x="472" y="134" width="70" height="28" fill="#0F294A" stroke="#22D3EE"/><text x="507" y="152" fill="#F8FAFC">F (I2)</text>
+  </g>
+  <text x="36" y="200" fill="#22D3EE" font-family="monospace" font-size="12">Commercial Hardware Pipeline (Overlapped Stages):</text>
+  <g font-family="monospace" font-size="11" text-anchor="middle">
+    <rect x="40" y="214" width="70" height="26" fill="#0E7490"/><text x="75" y="231" fill="#F8FAFC">I1: F</text>
+    <rect x="112" y="214" width="70" height="26" fill="#0E7490"/><text x="147" y="231" fill="#F8FAFC">I1: D</text>
+    <rect x="184" y="214" width="70" height="26" fill="#0E7490"/><text x="219" y="231" fill="#F8FAFC">I1: RR</text>
+    <rect x="256" y="214" width="70" height="26" fill="#0E7490"/><text x="291" y="231" fill="#F8FAFC">I1: EX</text>
+    <rect x="328" y="214" width="70" height="26" fill="#0E7490"/><text x="363" y="231" fill="#F8FAFC">I1: MEM</text>
+    <rect x="400" y="214" width="70" height="26" fill="#0E7490"/><text x="435" y="231" fill="#F8FAFC">I1: WB</text>
+
+    <rect x="112" y="244" width="70" height="26" fill="#1D4ED8"/><text x="147" y="261" fill="#F8FAFC">I2: F</text>
+    <rect x="184" y="244" width="70" height="26" fill="#1D4ED8"/><text x="219" y="261" fill="#F8FAFC">I2: D</text>
+    <rect x="256" y="244" width="70" height="26" fill="#1D4ED8"/><text x="291" y="261" fill="#F8FAFC">I2: RR</text>
+    <rect x="328" y="244" width="70" height="26" fill="#1D4ED8"/><text x="363" y="261" fill="#F8FAFC">I2: EX</text>
+    <rect x="400" y="244" width="70" height="26" fill="#1D4ED8"/><text x="435" y="261" fill="#F8FAFC">I2: MEM</text>
+    <rect x="472" y="244" width="70" height="26" fill="#1D4ED8"/><text x="507" y="261" fill="#F8FAFC">I2: WB</text>
+  </g>
+</svg>

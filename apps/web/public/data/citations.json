@@ -1,0 +1,128 @@
+[
+  {
+    "id": "hennessy_patterson_6e",
+    "authors": "Hennessy, J. L., & Patterson, D. A.",
+    "title": "Computer Architecture: A Quantitative Approach (6th ed.)",
+    "publication": "Morgan Kaufmann",
+    "year": 2017,
+    "sectionOrChapter": "Ch. 1–5 & Appendices A/C"
+  },
+  {
+    "id": "patterson_hennessy_cod",
+    "authors": "Patterson, D. A., & Hennessy, J. L.",
+    "title": "Computer Organization and Design: The Hardware/Software Interface",
+    "publication": "Morgan Kaufmann",
+    "year": 2020,
+    "sectionOrChapter": "Ch. 1–5 (Datapath, Control & Memory)"
+  },
+  {
+    "id": "harris_harris_ddca",
+    "authors": "Harris, D. M., & Harris, S. L.",
+    "title": "Digital Design and Computer Architecture",
+    "publication": "Morgan Kaufmann",
+    "year": 2012,
+    "sectionOrChapter": "Ch. 1–7 (Digital Logic & Processor Design)"
+  },
+  {
+    "id": "bryant_ohallaron_csapp",
+    "authors": "Bryant, R. E., & O'Hallaron, D. R.",
+    "title": "Computer Systems: A Programmer's Perspective (3rd ed.)",
+    "publication": "Pearson",
+    "year": 2015,
+    "sectionOrChapter": "Ch. 1, 4 & 6 (Memory Hierarchy)"
+  },
+  {
+    "id": "weste_harris_cmos",
+    "authors": "Weste, N. H. E., & Harris, D. M.",
+    "title": "CMOS VLSI Design: A Circuits and Systems Perspective (4th ed.)",
+    "publication": "Addison-Wesley",
+    "year": 2010,
+    "sectionOrChapter": "Ch. 1, 5, 11–13 (CMOS, Power, Datapaths & Clocking)"
+  },
+  {
+    "id": "mano_ciletti",
+    "authors": "Mano, M. M., & Ciletti, M. D.",
+    "title": "Digital Design (6th ed.)",
+    "publication": "Pearson",
+    "year": 2018,
+    "sectionOrChapter": "Boolean Logic & Combinational Circuits"
+  },
+  {
+    "id": "von_neumann_edvac",
+    "authors": "von Neumann, J.",
+    "title": "First Draft of a Report on the EDVAC",
+    "publication": "Moore School of Electrical Engineering, University of Pennsylvania",
+    "year": 1945
+  },
+  {
+    "id": "patterson_ditzel_risc",
+    "authors": "Patterson, D. A., & Ditzel, D. R.",
+    "title": "The Case for the Reduced Instruction Set Computer",
+    "publication": "ACM SIGARCH Computer Architecture News, Vol. 8, No. 6",
+    "year": 1980
+  },
+  {
+    "id": "smith_branch_1981",
+    "authors": "Smith, J. E.",
+    "title": "A Study of Branch Prediction Strategies",
+    "publication": "Proceedings of the 8th Annual Symposium on Computer Architecture (ISCA)",
+    "year": 1981
+  },
+  {
+    "id": "amdahl_1967",
+    "authors": "Amdahl, G. M.",
+    "title": "Validity of the Single Processor Approach to Achieving Large Scale Computing Capabilities",
+    "publication": "AFIPS Spring Joint Computer Conference",
+    "year": 1967
+  },
+  {
+    "id": "dally_towles_noc",
+    "authors": "Dally, W. J., & Towles, B.",
+    "title": "Principles and Practices of Interconnection Networks",
+    "publication": "Morgan Kaufmann",
+    "year": 2004
+  },
+  {
+    "id": "jacob_ng_wang_mem",
+    "authors": "Jacob, B., Ng, S. W., & Wang, D. T.",
+    "title": "Memory Systems: Cache, DRAM, Disk",
+    "publication": "Morgan Kaufmann",
+    "year": 2007
+  },
+  {
+    "id": "sorin_hill_wood_coherence",
+    "authors": "Sorin, D. J., Hill, M. D., & Wood, D. A.",
+    "title": "A Primer on Memory Consistency and Cache Coherence",
+    "publication": "Morgan & Claypool Publishers",
+    "year": 2011
+  },
+  {
+    "id": "tummala_packaging",
+    "authors": "Tummala, R. R.",
+    "title": "Fundamentals of Microsystems Packaging",
+    "publication": "McGraw-Hill",
+    "year": 2001
+  },
+  {
+    "id": "tanenbaum_austin_sco",
+    "authors": "Tanenbaum, A. S., & Austin, T.",
+    "title": "Structured Computer Organization (6th ed.)",
+    "publication": "Pearson",
+    "year": 2012
+  },
+  {
+    "id": "jedec_thermal",
+    "authors": "JEDEC Solid State Technology Association",
+    "title": "JESD51 Thermal Measurement & MO-Series Package Mechanical Standards",
+    "publication": "JEDEC Standards",
+    "year": 2020
+  },
+  {
+    "id": "khronos_gltf2",
+    "authors": "Khronos Group 3D Formats Working Group",
+    "title": "glTF 2.0 Specification",
+    "publication": "Khronos Group",
+    "year": 2017,
+    "url": "https://registry.khronos.org/glTF/specs/2.0/glTF-2.0.html"
+  }
+]

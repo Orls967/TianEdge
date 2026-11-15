@@ -1,0 +1,150 @@
+[
+  {
+    "id": "cpu-foundations",
+    "title": "Path 1: CPU Foundations (From Package to Logic)",
+    "difficulty": "foundational",
+    "estimatedMinutes": 20,
+    "summary": "Explore the physical layers of a microprocessor package, locate the silicon die subsystems, and trace how logic gates form an ALU.",
+    "steps": [
+      {
+        "stepOrder": 1,
+        "targetRoute": "/anatomy",
+        "targetId": "pkg-ihs",
+        "title": "Inspect the Integrated Heat Spreader & Package",
+        "objective": "Switch to Exploded View to understand the physical assembly protecting the silicon die."
+      },
+      {
+        "stepOrder": 2,
+        "targetRoute": "/anatomy",
+        "targetId": "die-cpu-cores",
+        "title": "Explore Silicon Die Floorplan Regions",
+        "objective": "Toggle Internal Architecture to distinguish cores, cache regions, and interconnects."
+      },
+      {
+        "stepOrder": 3,
+        "targetRoute": "/insights",
+        "targetId": "isa",
+        "title": "Learn the ISA Hardware-Software Contract",
+        "objective": "Understand how instructions bridge software semantics and microarchitectural units."
+      },
+      {
+        "stepOrder": 4,
+        "targetRoute": "/anatomy",
+        "targetId": "logic-transistors",
+        "title": "Examine Conceptual Digital Logic Foundations",
+        "objective": "Isolate enlarged CMOS transistor and adder models (explicitly marked not-to-scale)."
+      }
+    ]
+  },
+  {
+    "id": "inside-an-instruction",
+    "title": "Path 2: Inside an Instruction (6-Stage Lifecycle)",
+    "difficulty": "foundational",
+    "estimatedMinutes": 25,
+    "summary": "Follow a single ADD and STORE instruction through all 6 canonical execution stages, then run full programs in the Rust/WASM simulator.",
+    "steps": [
+      {
+        "stepOrder": 1,
+        "targetRoute": "/journey",
+        "targetId": "add_register_flow",
+        "title": "Walk Through ADD R3, R1, R2",
+        "objective": "Step from FETCH to WRITE_BACK and observe MEMORY_ACCESS bypass."
+      },
+      {
+        "stepOrder": 2,
+        "targetRoute": "/journey",
+        "targetId": "store_memory_flow",
+        "title": "Contrast with STORE R3, 100",
+        "objective": "Watch MAR/MDR latch and commit data through L1d into Data Memory."
+      },
+      {
+        "stepOrder": 3,
+        "targetRoute": "/simulator",
+        "targetId": "canonical",
+        "title": "Execute the Full 4-Line Program",
+        "objective": "Verify R1=10, R2=20, R3=30, MEM[100]=30 across 24 deterministic clock cycles."
+      },
+      {
+        "stepOrder": 4,
+        "targetRoute": "/insights",
+        "targetId": "cpu-pipelining",
+        "title": "Compare Sequential Stepping vs. Pipelining",
+        "objective": "See how real hardware overlaps stages and resolves RAW data hazards."
+      }
+    ]
+  },
+  {
+    "id": "memory-performance-engineering",
+    "title": "Path 3: Memory Hierarchy & Performance Engineering",
+    "difficulty": "intermediate",
+    "estimatedMinutes": 30,
+    "summary": "Analyze why registers, L1/L2/L3 caches, branch prediction, and IPC govern processor performance beyond raw GHz.",
+    "steps": [
+      {
+        "stepOrder": 1,
+        "targetRoute": "/insights",
+        "targetId": "harvard-architecture",
+        "title": "Split L1i/L1d & Modified Harvard",
+        "objective": "Understand how separating instruction and data caches prevents structural bottlenecks."
+      },
+      {
+        "stepOrder": 2,
+        "targetRoute": "/insights",
+        "targetId": "cache-hierarchy",
+        "title": "Cache Pyramid & AMAT",
+        "objective": "Study temporal/spatial locality and calculate Average Memory Access Time."
+      },
+      {
+        "stepOrder": 3,
+        "targetRoute": "/insights",
+        "targetId": "ipc",
+        "title": "Iron Law of Processor Performance",
+        "objective": "Evaluate IC, CPI/IPC, and clock frequency trade-offs."
+      },
+      {
+        "stepOrder": 4,
+        "targetRoute": "/simulator",
+        "targetId": "countdown",
+        "title": "Simulate Conditional Branching Loops",
+        "objective": "Run the CMP/JNZ countdown preset and inspect FLAGS.Z and cycle accumulation."
+      }
+    ]
+  },
+  {
+    "id": "silicon-packaging-to-logic",
+    "title": "Path 4: Silicon Packaging, Power & Thermal Physics",
+    "difficulty": "advanced",
+    "estimatedMinutes": 25,
+    "summary": "Connect nanoscale transistor switching power and clock distribution constraints to multi-core architectures and package thermal limits.",
+    "steps": [
+      {
+        "stepOrder": 1,
+        "targetRoute": "/insights",
+        "targetId": "clock-frequency",
+        "title": "Timing Closure & Critical Paths",
+        "objective": "Examine how combinational delay and clock skew bound f_max."
+      },
+      {
+        "stepOrder": 2,
+        "targetRoute": "/insights",
+        "targetId": "power-consumption",
+        "title": "Dynamic V^2*f Power & Leakage",
+        "objective": "Understand why Dennard scaling ended and why voltage scaling dominates power."
+      },
+      {
+        "stepOrder": 3,
+        "targetRoute": "/insights",
+        "targetId": "multi-core-architecture",
+        "title": "Multi-Core CMP & Cache Coherence",
+        "objective": "Explore how multiple moderate-clock cores deliver higher throughput per watt."
+      },
+      {
+        "stepOrder": 4,
+        "targetRoute": "/insights",
+        "targetId": "thermal-management",
+        "title": "Thermal Resistance Stack & IHS",
+        "objective": "Trace heat flow from die execution units through TIM and IHS to ambient."
+      }
+    ]
+  }
+]

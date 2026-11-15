@@ -1,0 +1,103 @@
+[
+  {
+    "id": "iron-law-performance",
+    "name": "Iron Law of Processor Performance",
+    "latex": "T_{exec} = \\text{IC} \\times \\text{CPI} \\times T_{clk} = \\frac{\\text{IC}}{\\text{IPC} \\cdot f}",
+    "variables": [
+      { "symbol": "T_exec", "name": "CPU Execution Time", "unit": "s", "description": "Total active processor time spent executing the program." },
+      { "symbol": "IC", "name": "Instruction Count", "unit": "instructions", "description": "Dynamic number of retired instructions executed by the program." },
+      { "symbol": "CPI", "name": "Cycles Per Instruction", "unit": "cycles/instruction", "description": "Average clock cycles consumed per completed instruction." },
+      { "symbol": "IPC", "name": "Instructions Per Cycle", "unit": "instructions/cycle", "description": "Reciprocal of CPI (1 / CPI); throughput per clock tick." },
+      { "symbol": "T_clk", "name": "Clock Period", "unit": "s/cycle", "description": "Duration of one synchronous clock cycle (1 / f)." },
+      { "symbol": "f", "name": "Clock Frequency", "unit": "Hz", "description": "Clock oscillation rate (cycles per second)." }
+    ],
+    "assumptions": "Measures active CPU execution time assuming constant average clock frequency f and excluding external I/O stall waits.",
+    "applicability": "Comparing ISA efficiency (IC), microarchitectural throughput (CPI/IPC), and silicon timing (f) across processor designs.",
+    "workedExample": "TIAN-ISA v1 canonical 4-instruction program: IC = 4, CPI = 6 (sequential 6-stage model) -> 24 simulated cycles. At f = 2.0 GHz (0.5 ns period), T_exec = 24 * 0.5 ns = 12.0 ns.",
+    "relatedInsightIds": ["ipc", "clock-frequency", "cpu-pipelining"],
+    "citationIds": ["hennessy_patterson_6e", "patterson_hennessy_cod"]
+  },
+  {
+    "id": "cmos-dynamic-power",
+    "name": "CMOS Dynamic Switching Power",
+    "latex": "P_{dyn} = \\alpha \\cdot C \\cdot V_{DD}^2 \\cdot f",
+    "variables": [
+      { "symbol": "P_dyn", "name": "Dynamic Switching Power", "unit": "W", "description": "Average power dissipated charging and discharging logic node capacitances." },
+      { "symbol": "\\alpha", "name": "Activity Factor", "unit": "dimensionless (0..1)", "description": "Fraction of switching transitions per clock cycle." },
+      { "symbol": "C", "name": "Switched Load Capacitance", "unit": "F", "description": "Total capacitive load of transistors and interconnect wires driven." },
+      { "symbol": "V_DD", "name": "Supply Voltage", "unit": "V", "description": "Core supply rail potential." },
+      { "symbol": "f", "name": "Clock Frequency", "unit": "Hz", "description": "Switching clock rate." }
+    ],
+    "assumptions": "Models capacitive switching energy in digital CMOS circuits; total package power also adds static leakage (I_leak * V_DD) and short-circuit current.",
+    "applicability": "Explains DVFS voltage-frequency scaling and why modest voltage reductions yield quadratic power savings.",
+    "workedExample": "If alpha = 0.25, C = 10 nF, V_DD = 1.0 V, f = 3.0 GHz -> P_dyn = 0.25 * 10e-9 * 1.0^2 * 3e9 = 7.5 W. Lowering V_DD to 0.8 V reduces P_dyn by 36% to 4.8 W at the same frequency.",
+    "relatedInsightIds": ["power-consumption", "clock-frequency", "thermal-management"],
+    "citationIds": ["weste_harris_cmos", "hennessy_patterson_6e"]
+  },
+  {
+    "id": "amat-two-level",
+    "name": "Average Memory Access Time (AMAT — Two-Level)",
+    "latex": "\\text{AMAT} = T_{hit,L1} + \\text{MR}_{L1} \\times \\left(T_{hit,L2} + \\text{MR}_{L2} \\times T_{miss,L2}\\right)",
+    "variables": [
+      { "symbol": "AMAT", "name": "Average Memory Access Time", "unit": "cycles or ns", "description": "Expected latency per memory reference across the hierarchy." },
+      { "symbol": "T_hit,L1", "name": "L1 Hit Time", "unit": "cycles or ns", "description": "Access latency when data hits in L1 cache." },
+      { "symbol": "MR_L1", "name": "L1 Local Miss Rate", "unit": "dimensionless (0..1)", "description": "Fraction of L1 accesses that miss and query L2." },
+      { "symbol": "T_hit,L2", "name": "L2 Hit Time", "unit": "cycles or ns", "description": "Access latency when data hits in L2 cache." },
+      { "symbol": "MR_L2", "name": "L2 Local Miss Rate", "unit": "dimensionless (0..1)", "description": "Fraction of L2 queries that miss and go to lower memory." },
+      { "symbol": "T_miss,L2", "name": "L2 Miss Penalty", "unit": "cycles or ns", "description": "Penalty to retrieve cache line from L3/DRAM on L2 miss." }
+    ],
+    "assumptions": "Assumes serial single-outstanding lookup without hardware prefetching or store-buffer hiding; extends recursively to L3 and DRAM.",
+    "applicability": "Quantifying cache hit-rate vs. capacity latency trade-offs in memory hierarchy design.",
+    "workedExample": "Given T_hit,L1 = 4 cycles, MR_L1 = 0.05, T_hit,L2 = 12 cycles, MR_L2 = 0.20, T_miss,L2 = 180 cycles -> AMAT = 4 + 0.05 * (12 + 0.20 * 180) = 4 + 0.05 * 48 = 6.4 cycles.",
+    "relatedInsightIds": ["cache-hierarchy", "ipc", "harvard-architecture"],
+    "citationIds": ["hennessy_patterson_6e", "bryant_ohallaron_csapp"]
+  },
+  {
+    "id": "amdahls-law",
+    "name": "Amdahl's Law (Parallel Speedup Bound)",
+    "latex": "S_{overall} = \\frac{1}{(1 - p) + \\frac{p}{s}}",
+    "variables": [
+      { "symbol": "S_overall", "name": "Overall Speedup Factor", "unit": "dimensionless", "description": "Ratio of original single-unit execution time to enhanced execution time." },
+      { "symbol": "p", "name": "Parallelizable Fraction", "unit": "dimensionless (0..1)", "description": "Proportion of original execution time eligible for speedup." },
+      { "symbol": "s", "name": "Local Speedup Factor", "unit": "dimensionless (>0)", "description": "Speedup applied to the parallelizable portion (e.g., N ideal cores)." }
+    ],
+    "assumptions": "Assumes fixed workload size (strong scaling), zero synchronization/coherence overhead, and ideal load balance.",
+    "applicability": "Evaluating diminishing returns when adding cores or vector lanes to workloads with serial bottlenecks.",
+    "workedExample": "If 80% of a workload is parallelizable (p = 0.80) across s = 8 ideal cores -> S_overall = 1 / (0.20 + 0.80 / 8) = 1 / 0.30 = 3.33x (asymptotic ceiling as s -> inf is 5.0x).",
+    "relatedInsightIds": ["parallel-processing", "multi-core-architecture"],
+    "citationIds": ["amdahl_1967", "hennessy_patterson_6e"]
+  },
+  {
+    "id": "thermal-junction-1d",
+    "name": "Thermal Junction Temperature Model (1D Steady-State)",
+    "latex": "T_J = T_A + P \\cdot R_{\\theta,JA}",
+    "variables": [
+      { "symbol": "T_J", "name": "Silicon Junction Temperature", "unit": "deg C", "description": "Steady-state transistor junction temperature on the active die." },
+      { "symbol": "T_A", "name": "Ambient Temperature", "unit": "deg C", "description": "Cooling air or fluid inlet temperature." },
+      { "symbol": "P", "name": "Thermal Power Dissipation", "unit": "W", "description": "Steady-state heat flux generated by the processor package." },
+      { "symbol": "R_theta,JA", "name": "Junction-to-Ambient Thermal Resistance", "unit": "deg C/W", "description": "Series thermal resistance across die, TIM, IHS, and heatsink." }
+    ],
+    "assumptions": "Simplified lumped 1D steady-state thermal resistance network; localized core hotspots require 3D spatial thermal mapping.",
+    "applicability": "Estimating thermal envelope headroom and cooling solution requirements under sustained TDP load.",
+    "workedExample": "At T_A = 25 deg C, P = 120 W, and R_theta,JA = 0.45 deg C/W -> T_J = 25 + 120 * 0.45 = 79 deg C.",
+    "relatedInsightIds": ["thermal-management", "power-consumption"],
+    "citationIds": ["tummala_packaging", "jedec_thermal"]
+  },
+  {
+    "id": "sync-clock-timing",
+    "name": "Synchronous Clock Timing Constraint",
+    "latex": "T_{clk} \\ge t_{pcq} + t_{comb,max} + t_{setup} + t_{skew}",
+    "variables": [
+      { "symbol": "T_clk", "name": "Minimum Clock Period", "unit": "s", "description": "Shortest valid clock cycle before setup timing violations occur." },
+      { "symbol": "t_pcq", "name": "Clock-to-Q Propagation Delay", "unit": "s", "description": "Delay from rising clock edge until launching flip-flop output stabilizes." },
+      { "symbol": "t_comb,max", "name": "Critical Combinational Path Delay", "unit": "s", "description": "Longest propagation path through combinational logic gates." },
+      { "symbol": "t_setup", "name": "Flip-Flop Setup Time", "unit": "s", "description": "Time data must remain stable before the capturing clock edge." },
+      { "symbol": "t_skew", "name": "Clock Skew", "unit": "s", "description": "Worst-case arrival timing difference across the clock distribution network." }
+    ],
+    "assumptions": "Setup timing constraint for single-phase rising-edge-triggered synchronous digital logic.",
+    "applicability": "Determining maximum clock frequency (f_max = 1 / T_clk,min) and motivating pipeline stage subdivision.",
+    "workedExample": "If t_pcq = 35 ps, t_comb,max = 240 ps, t_setup = 25 ps, t_skew = 20 ps -> T_clk,min = 320 ps, giving f_max = 1 / 320 ps = 3.125 GHz.",
+    "relatedInsightIds": ["clock-frequency", "cpu-pipelining"],
+    "citationIds": ["harris_harris_ddca", "weste_harris_cmos"]
+  }
+]

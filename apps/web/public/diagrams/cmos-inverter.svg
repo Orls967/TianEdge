@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 340" role="img" aria-label="Complementary CMOS Inverter Schematic">
+  <rect width="880" height="340" fill="#070A10" rx="10"/>
+  <rect x="16" y="16" width="848" height="308" fill="#0D121C" stroke="#334155" stroke-width="1" rx="8"/>
+  <text x="36" y="46" fill="#F8FAFC" font-family="Inter, sans-serif" font-size="16" font-weight="700">Complementary CMOS Inverter (Conceptual Enlarged Model)</text>
+  <line x1="340" y1="74" x2="540" y2="74" stroke="#FBBF24" stroke-width="2"/>
+  <text x="440" y="66" fill="#FBBF24" font-family="monospace" font-size="12" text-anchor="middle">VDD (Logic 1)</text>
+  <line x1="440" y1="74" x2="440" y2="115" stroke="#CBD5E1" stroke-width="2"/>
+  <rect x="385" y="115" width="110" height="46" rx="6" fill="#141B29" stroke="#FBBF24"/>
+  <text x="440" y="143" fill="#FBBF24" font-family="monospace" font-size="12" text-anchor="middle">PMOS Pull-Up</text>
+  <line x1="440" y1="161" x2="440" y2="205" stroke="#00E5FF" stroke-width="2"/>
+  <line x1="440" y1="183" x2="620" y2="183" stroke="#00E5FF" stroke-width="2"/>
+  <text x="640" y="187" fill="#00E5FF" font-family="monospace" font-size="13" font-weight="700">Output Y = NOT A</text>
+  <rect x="385" y="205" width="110" height="46" rx="6" fill="#141B29" stroke="#00E5FF"/>
+  <text x="440" y="233" fill="#00E5FF" font-family="monospace" font-size="12" text-anchor="middle">NMOS Pull-Down</text>
+  <line x1="440" y1="251" x2="440" y2="288" stroke="#CBD5E1" stroke-width="2"/>
+  <line x1="340" y1="288" x2="540" y2="288" stroke="#94A3B8" stroke-width="2"/>
+  <text x="440" y="308" fill="#94A3B8" font-family="monospace" font-size="12" text-anchor="middle">VSS / GND (Logic 0)</text>
+  <line x1="220" y1="183" x2="340" y2="183" stroke="#22D3EE" stroke-width="2"/>
+  <path d="M340 138 L340 228 M340 138 L385 138 M340 228 L385 228" stroke="#22D3EE" stroke-width="2" fill="none"/>
+  <text x="170" y="187" fill="#22D3EE" font-family="monospace" font-size="13" font-weight="700">Input A</text>
+</svg>
