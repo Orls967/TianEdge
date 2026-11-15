@@ -9,11 +9,11 @@
 
 ## 1. Current Status Overview
 
-- **Current Phase:** Phase 8 & 9 Complete -> Proceeding to Phase 10 (Playwright E2E, `axe-core` Accessibility, WebGL Profiling & GitHub Pages Deploy Prep)
-- **Completed Phases:** Phase 0–9 Complete
-- **Active Milestone:** L7 Complete
-- **Latest Pushed Commit:** `2cda7d9` (L6; L7 commit imminent)
-- **Deployment Status:** Preparing `.github/workflows/deploy.yml` and verifying subpath build (`VITE_BASE_PATH="/TianEdge/"`)
+- **Current Phase:** Phase 10 Complete — Production-Ready Release Verified
+- **Completed Phases:** Phase 0–10 Complete
+- **Active Milestone:** L8–L9 Complete (Release QA & Deployment Verification)
+- **Previous Pushed Commit:** `f91e4a7` (L7); final Phase 10 commit ready for `origin/main`
+- **Deployment Status:** `.github/workflows/ci.yml` and `.github/workflows/deploy.yml` configured; subpath build (`VITE_BASE_PATH="/TianEdge/"`) verified (`keepSegments=1`, `/TianEdge/assets/*`)
 
 ---
 
@@ -31,7 +31,7 @@
 | Phase 7 | Overview, Anatomy, Journey & Simulator | Completed | `/`, `/anatomy` (36-component tree + 15-field dossier), `/journey` (WASM-backed + simulator handoff), `/simulator` (live worker + editor) |
 | Phase 8 | Engineering Insights (13 Topics) | Completed | All 13 topics, KaTeX equations, SVG diagrams, general-vs-vendor boundary callouts, 3D & preset cross-links |
 | Phase 9 | Technical Library & FastAPI Backend | Completed | All 7 modules + citations (`searchLibraryHybrid`), Pydantic v2 FastAPI `/api/v1/*` service (`extra="forbid"` zero-PII), `Dockerfile` |
-| Phase 10 | QA, Performance Optimization & Release | Next | Playwright E2E, `axe-core` accessibility audits, live WebGL draw-call/poly profiling, GitHub Pages deploy |
+| Phase 10 | QA, Performance Optimization & Release | Completed | Playwright E2E (4/4), `axe-core` WCAG scan (0 violations), live WebGL telemetry (`17` drawCalls, `6,492` tris, `0` fallbacks), GH Pages `deploy.yml` |
 
 ---
 
@@ -42,6 +42,8 @@
 - `npm --prefix apps/web run build:wasm`: **PASS** (`75.26 kB` compiled `.wasm`)
 - `services/api/.venv/bin/pytest services/api -v`: **PASS** (5/5 API contract + zero-PII tests)
 - `npm --prefix apps/web run typecheck`: **PASS** (`tsc -b --pretty false`)
-- `npm --prefix apps/web run lint`: **PASS**
+- `npm --prefix apps/web run lint`: **PASS** (0 errors, 0 warnings)
 - `npm --prefix apps/web run test`: **PASS** (4 files, 17/17 tests)
 - `npm --prefix apps/web run build`: **PASS** (`dist/404.html` generated)
+- `VITE_BASE_PATH="/TianEdge/" npm --prefix apps/web run build`: **PASS** (`dist/404.html` with `keepSegments=1`, assets under `/TianEdge/assets/`)
+- `npm --prefix apps/web run test:e2e`: **PASS** (4/4 Playwright specs: WebGL `.glb` telemetry `drawCalls=17`, `triangles=6492`, `fallbackAssets=0`; WASM canonical parity + `/journey` -> `/simulator` handoff; `1024x768` & `390x844` zero horizontal overflow; `axe-core` 0 critical/serious WCAG violations across all 6 routes)

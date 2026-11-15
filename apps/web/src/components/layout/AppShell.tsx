@@ -109,7 +109,11 @@ export function AppShell({ children }: { children: ReactNode }) {
             className="btn btn-sm"
             onClick={toggleReducedMotion}
             aria-pressed={reducedMotion}
-            aria-label={reducedMotion ? 'Resume animations (motion paused)' : 'Pause animations (reduced motion)'}
+            aria-label={
+              reducedMotion
+                ? 'Motion Paused — Resume animations'
+                : 'Motion Active — Pause animations (reduced motion)'
+            }
             title="Toggle reduced motion (pauses idle rotation and signal pulsing)"
           >
             {reducedMotion ? <Play size={13} /> : <Pause size={13} />}
