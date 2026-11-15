@@ -85,3 +85,31 @@ export function ErrorState({
     </div>
   );
 }
+
+export function LoadingStateView({ label }: { label?: string }) {
+  return <LoadingState message={label} />;
+}
+
+export function ErrorStateView({
+  title,
+  message,
+  onRetry,
+}: {
+  title?: string;
+  message: string;
+  onRetry?: () => void;
+}) {
+  return (
+    <ErrorState
+      title={title}
+      message={message}
+      action={
+        onRetry ? (
+          <button type="button" className="te-btn te-btn-sm" onClick={onRetry}>
+            Retry
+          </button>
+        ) : undefined
+      }
+    />
+  );
+}

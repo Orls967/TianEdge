@@ -1,4 +1,4 @@
-import { Component, type ReactNode, useEffect, useState } from 'react';
+import { Component, type ReactNode, useState } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import type { ChipComponent, VisualizationMode } from '../types/models';
 import { useAppStore } from '../stores/useAppStore';
@@ -133,6 +133,144 @@ function Schematic2DFallback({
   );
 }
 
+function WebGLStage({
+  components,
+  activeComponentIds,
+  activePaths,
+  isOverviewHero,
+  autoCameraEnabled,
+  effectiveMode,
+  onSelect,
+  onSelectById,
+  onContextLost,
+  onContextRestored,
+}: {
+  components: ChipComponent[];
+  activeComponentIds: string[];
+  activePaths: string[];
+  isOverviewHero: boolean;
+  autoCameraEnabled: boolean;
+  effectiveMode: VisualizationMode;
+  onSelect: (comp: ChipComponent) => void;
+  onSelectById: (componentId: string) => void;
+  onContextLost: () => void;
+  onContextRestored: () => void;
+}) {
+  const { reducedMotion, tabHidden } = useAppStore();
+  const {
+    selectedComponentId,
+    hoveredComponentId,
+    sliceOffset,
+    hiddenComponents,
+    hiddenGroups,
+    cameraTargetPreset,
+    resetCameraNonce,
+    isUserInteracting,
+    hoverComponent,
+    setUserInteracting,
+  } = useAnatomyStore();
+
+  const { assets, fallbackCount } = useGlbAssets();
+
+  return (
+    <Canvas
+      dpr={[1, 1.75]}
+      camera={{ position: [3.6, 2.7, 3.8], fov: 42, near: 0.1, far: 80 }}
+      gl={{
+        antialias: true,
+        powerPreference: 'high-performance',
+        localClippingEnabled: true,
+      }}
+      onCreated={({ gl }) => {
+        const canvas = gl.domElement;
+        canvas.addEventListener(
+          'webglcontextlost',
+          (e) => {
+            e.preventDefault();
+            onContextLost();
+          },
+          false,
+        );
+        canvas.addEventListener('webglcontextrestored', onContextRestored, false);
+      }}
+      onPointerMissed={() => {
+        hoverComponent(null);
+      }}
+    >
+      <color attach="background" args={['#090d16']} />
+      <ambientLight intensity={0.62} />
+      <directionalLight position={[5, 8, 6]} intensity={1.25} color="#f8fafc" />
+      <directionalLight position={[-5, 4, -5]} intensity={0.55} color="#38bdf8" />
+      <pointLight position={[0, 2.2, 0]} intensity={0.45} color="#fbbf24" />
+
+      <gridHelper args={[10, 20, '#1e293b', '#0f172a']} position={[0, -0.36, 0]} />
+
+      <CameraRig
+        preset={cameraTargetPreset}
+        resetNonce={resetCameraNonce}
+        reducedMotion={reducedMotion}
+        tabHidden={tabHidden}
+        hasActiveSimulation={activeComponentIds.length > 0}
+        isOverviewHero={isOverviewHero}
+        autoCameraEnabled={autoCameraEnabled}
+        onUserInteractingChange={setUserInteracting}
+      />
+
+      <ChipModelGroup
+        components={components}
+        assets={assets}
+        mode={effectiveMode}
+        sliceOffset={sliceOffset}
+        selectedComponentId={selectedComponentId}
+        hoveredComponentId={hoveredComponentId}
+        activeComponentIds={activeComponentIds}
+        hiddenComponents={hiddenComponents}
+        hiddenGroups={hiddenGroups}
+        reducedMotion={reducedMotion}
+        tabHidden={tabHidden}
+        isUserInteracting={isUserInteracting}
+        isOverviewHero={isOverviewHero}
+        onSelectComponent={onSelect}
+        onHoverComponent={hoverComponent}
+      />
+
+      <HardwareInstancedArrays
+        showSolderBumps={
+          !hiddenComponents['pkg-solder-bumps'] &&
+          !hiddenGroups['cpu-package'] &&
+          effectiveMode !== 'component_isolation'
+        }
+        showLgaPads={
+          !hiddenComponents['pkg-electrical-contacts'] &&
+          !hiddenGroups['cpu-package'] &&
+          effectiveMode !== 'component_isolation'
+        }
+        explodedMode={effectiveMode === 'exploded_view'}
+      />
+
+      <SignalFlowOverlay
+        mode={effectiveMode}
+        activePaths={activePaths}
+        reducedMotion={reducedMotion}
+        tabHidden={tabHidden}
+        onSelectComponent={onSelectById}
+      />
+
+      <ThermalAirflowRibbons
+        visible={isOverviewHero || effectiveMode === 'full_assembly'}
+        reducedMotion={reducedMotion}
+        tabHidden={tabHidden}
+      />
+
+      <MetricsReporter
+        mode={effectiveMode}
+        fallbackCount={fallbackCount}
+        activeComponentsCount={activeComponentIds.length}
+      />
+    </Canvas>
+  );
+}
+
 export function CpuSceneCanvas({
   components,
   activeComponentIds = [],
@@ -143,31 +281,11 @@ export function CpuSceneCanvas({
   onSelectComponent,
   heightClassName = 'te-canvas-frame',
 }: CpuSceneCanvasProps) {
-  const { reducedMotion, tabHidden } = useAppStore();
-  const {
-    selectedComponentId,
-    hoveredComponentId,
-    visualizationMode,
-    sliceOffset,
-    hiddenComponents,
-    hiddenGroups,
-    cameraTargetPreset,
-    resetCameraNonce,
-    isUserInteracting,
-    selectComponent,
-    hoverComponent,
-    setUserInteracting,
-  } = useAnatomyStore();
-
-  const { assets, fallbackCount } = useGlbAssets();
-  const [webglReady, setWebglReady] = useState(() => supportsWebGL());
+  const { selectedComponentId, visualizationMode, selectComponent } = useAnatomyStore();
+  const [webglReady] = useState(() => supportsWebGL());
   const [contextLost, setContextLost] = useState(false);
 
   const effectiveMode = modeOverride ?? visualizationMode;
-
-  useEffect(() => {
-    setWebglReady(supportsWebGL());
-  }, []);
 
   const handleSelect = (comp: ChipComponent) => {
     selectComponent(comp.id, comp.modelReference.cameraPreset);
@@ -195,107 +313,18 @@ export function CpuSceneCanvas({
   return (
     <div className={heightClassName} data-testid="cpu-scene-canvas-wrapper">
       <SceneErrorBoundary fallback={fallbackView}>
-        <Canvas
-          dpr={[1, 1.75]}
-          camera={{ position: [3.6, 2.7, 3.8], fov: 42, near: 0.1, far: 80 }}
-          gl={{
-            antialias: true,
-            powerPreference: 'high-performance',
-            localClippingEnabled: true,
-          }}
-          onCreated={({ gl }) => {
-            const canvas = gl.domElement;
-            canvas.addEventListener(
-              'webglcontextlost',
-              (e) => {
-                e.preventDefault();
-                setContextLost(true);
-              },
-              false,
-            );
-            canvas.addEventListener(
-              'webglcontextrestored',
-              () => {
-                setContextLost(false);
-              },
-              false,
-            );
-          }}
-          onPointerMissed={() => {
-            hoverComponent(null);
-          }}
-        >
-          <color attach="background" args={['#090d16']} />
-          <ambientLight intensity={0.62} />
-          <directionalLight position={[5, 8, 6]} intensity={1.25} color="#f8fafc" />
-          <directionalLight position={[-5, 4, -5]} intensity={0.55} color="#38bdf8" />
-          <pointLight position={[0, 2.2, 0]} intensity={0.45} color="#fbbf24" />
-
-          <gridHelper args={[10, 20, '#1e293b', '#0f172a']} position={[0, -0.36, 0]} />
-
-          <CameraRig
-            preset={cameraTargetPreset}
-            resetNonce={resetCameraNonce}
-            reducedMotion={reducedMotion}
-            tabHidden={tabHidden}
-            hasActiveSimulation={activeComponentIds.length > 0}
-            isOverviewHero={isOverviewHero}
-            autoCameraEnabled={autoCameraEnabled}
-            onUserInteractingChange={setUserInteracting}
-          />
-
-          <ChipModelGroup
-            components={components}
-            assets={assets}
-            mode={effectiveMode}
-            sliceOffset={sliceOffset}
-            selectedComponentId={selectedComponentId}
-            hoveredComponentId={hoveredComponentId}
-            activeComponentIds={activeComponentIds}
-            hiddenComponents={hiddenComponents}
-            hiddenGroups={hiddenGroups}
-            reducedMotion={reducedMotion}
-            tabHidden={tabHidden}
-            isUserInteracting={isUserInteracting}
-            isOverviewHero={isOverviewHero}
-            onSelectComponent={handleSelect}
-            onHoverComponent={hoverComponent}
-          />
-
-          <HardwareInstancedArrays
-            showSolderBumps={
-              !hiddenComponents['pkg-solder-bumps'] &&
-              !hiddenGroups['cpu-package'] &&
-              effectiveMode !== 'component_isolation'
-            }
-            showLgaPads={
-              !hiddenComponents['pkg-electrical-contacts'] &&
-              !hiddenGroups['cpu-package'] &&
-              effectiveMode !== 'component_isolation'
-            }
-            explodedMode={effectiveMode === 'exploded_view'}
-          />
-
-          <SignalFlowOverlay
-            mode={effectiveMode}
-            activePaths={activePaths}
-            reducedMotion={reducedMotion}
-            tabHidden={tabHidden}
-            onSelectComponent={handleSelectById}
-          />
-
-          <ThermalAirflowRibbons
-            visible={isOverviewHero || effectiveMode === 'full_assembly'}
-            reducedMotion={reducedMotion}
-            tabHidden={tabHidden}
-          />
-
-          <MetricsReporter
-            mode={effectiveMode}
-            fallbackCount={fallbackCount}
-            activeComponentsCount={activeComponentIds.length}
-          />
-        </Canvas>
+        <WebGLStage
+          components={components}
+          activeComponentIds={activeComponentIds}
+          activePaths={activePaths}
+          isOverviewHero={isOverviewHero}
+          autoCameraEnabled={autoCameraEnabled}
+          effectiveMode={effectiveMode}
+          onSelect={handleSelect}
+          onSelectById={handleSelectById}
+          onContextLost={() => setContextLost(true)}
+          onContextRestored={() => setContextLost(false)}
+        />
       </SceneErrorBoundary>
     </div>
   );

@@ -15,7 +15,11 @@ const cache = new Map<string, Promise<LoadedGlbEntry>>();
 function resolveModelUrl(filename: string): string {
   const base = import.meta.env.BASE_URL || '/';
   const normalizedBase = base.endsWith('/') ? base : `${base}/`;
-  return `${normalizedBase}models/${filename}`;
+  const path = `${normalizedBase}models/${filename}`;
+  if (typeof window !== 'undefined' && window.location?.origin && !window.location.origin.startsWith('null')) {
+    return `${window.location.origin}${path.startsWith('/') ? path : `/${path}`}`;
+  }
+  return path;
 }
 
 export function loadGlbAsset(filename: GlbAssetName): Promise<LoadedGlbEntry> {
@@ -23,26 +27,31 @@ export function loadGlbAsset(filename: GlbAssetName): Promise<LoadedGlbEntry> {
   if (existing) return existing;
 
   const promise = new Promise<LoadedGlbEntry>((resolve) => {
-    const loader = new GLTFLoader();
-    const url = resolveModelUrl(filename);
-    loader.load(
-      url,
-      (gltf) => {
-        const meshes: Record<string, THREE.Mesh> = {};
-        gltf.scene.traverse((obj) => {
-          if (obj instanceof THREE.Mesh && obj.name.startsWith('tianedge__')) {
-            meshes[obj.name] = obj;
-          }
-        });
-        resolve({ meshes, fallback: false, error: null });
-      },
-      undefined,
-      (err) => {
-        const msg = err instanceof Error ? err.message : `Failed to load ${filename}`;
-        console.warn(`[TIANEDGE 3D] Using procedural fallback for ${filename}:`, msg);
-        resolve({ meshes: {}, fallback: true, error: msg });
-      },
-    );
+    try {
+      const loader = new GLTFLoader();
+      const url = resolveModelUrl(filename);
+      loader.load(
+        url,
+        (gltf) => {
+          const meshes: Record<string, THREE.Mesh> = {};
+          gltf.scene.traverse((obj) => {
+            if (obj instanceof THREE.Mesh && obj.name.startsWith('tianedge__')) {
+              meshes[obj.name] = obj;
+            }
+          });
+          resolve({ meshes, fallback: false, error: null });
+        },
+        undefined,
+        (err) => {
+          const msg = err instanceof Error ? err.message : `Failed to load ${filename}`;
+          console.warn(`[TIANEDGE 3D] Using procedural fallback for ${filename}:`, msg);
+          resolve({ meshes: {}, fallback: true, error: msg });
+        },
+      );
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : `Failed to load ${filename}`;
+      resolve({ meshes: {}, fallback: true, error: msg });
+    }
   });
 
   cache.set(filename, promise);
