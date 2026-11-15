@@ -1,0 +1,64 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Node / Frontend dependencies
+node_modules/
+.pnpm-store/
+.npm/
+.yarn/
+
+# Build outputs & bundles
+dist/
+build/
+out/
+target/
+coverage/
+*.tsbuildinfo
+
+# Rust / WebAssembly intermediate artifacts (keep committed manifests if needed)
+crates/*/target/
+pkg/.gitignore
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+
+# IDE & Editors
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Logs & diagnostics
+*.log
+logs/
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Temporary & cache directories
+.tmp/
+.temp/
+.cache/
+.vite/
+
+# OS temporary files
+Thumbs.db
+Desktop.ini
