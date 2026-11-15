@@ -3,7 +3,7 @@
 **Project:** TIANEDGE — Semiconductor & Microprocessor Exploration Platform  
 **Repository:** `https://github.com/Orls967/TianEdge.git` (Branch: `main`)  
 **Phase:** Phase 0 — Complete Documentation Engineering & Specification Authoring  
-**Status:** In Progress (`L1` Complete → Moving to `L2`)  
+**Status:** In Progress (`L2` Complete → Moving to `L3`)  
 **Last Updated:** 2026-11-16
 
 ---
@@ -14,10 +14,10 @@
 |---|---|---|---|---|
 | 0 | `.gitignore` | L1 | Completed | Adapted for macOS, TypeScript/Vite, Rust/WASM, Python/FastAPI |
 | 1 | `DOCUMENTATION_PROGRESS.md` | L1 | Active | Maintained across every milestone |
-| 2 | `PRD.md` | L2 | Pending | Product requirements, 6 sections, scope, acceptance criteria |
-| 3 | `ARCHITECTURE.md` | L2 | Pending | TS/Rust-WASM/Python architecture, workers, fallback strategy |
-| 4 | `constraints.md` | L2 | Pending | 15+ core engineering constraints & decisions |
-| 5 | `flow.md` | L2 | Pending | Phased implementation roadmap & dependencies |
+| 2 | `PRD.md` | L2 | Completed | Product requirements, 6 sections, scope, acceptance criteria |
+| 3 | `ARCHITECTURE.md` | L2 | Completed | TS/Rust-WASM/Python architecture, workers, fallback strategy |
+| 4 | `constraints.md` | L2 | Completed | 15 core engineering constraints + 5 derived engineering decisions |
+| 5 | `flow.md` | L2 | Completed | 10-phase implementation roadmap & dependency graph |
 | 6 | `CHIP_ANATOMY_SPEC.md` | L3 | Pending | 6 groups, 36 components, 15-field schema each |
 | 7 | `DESIGN.md` | L3 | Pending | Visual direction, tokens, UI layout, accessibility |
 | 8 | `ASSET_GUIDELINES.md` | L3 | Pending | GLB/glTF, PBR materials, conceptual vs physical geometry |
@@ -65,12 +65,12 @@ Authoritative textbooks and official technical references used throughout specif
 
 | Milestone | Commit Hash | Message | Push Status |
 |---|---|---|---|
-| L1 | Pending | `chore: initialize TIANEDGE gitignore and progress tracker` | Pending |
+| L1 | `5e1a2b7` | `chore: initialize TIANEDGE gitignore and progress tracker` | Pushed to `origin/main` |
+| L2 | Pending | `docs: define product requirements, architecture, constraints, and roadmap` | Pending |
 
 ---
 
 ## 5. Next Actions
 
-1. Commit and push L1 (`.gitignore` and `DOCUMENTATION_PROGRESS.md`) to `origin/main`.
-2. Author L2 documents: `PRD.md`, `ARCHITECTURE.md`, `constraints.md`, and `flow.md`.
-3. Update `DOCUMENTATION_PROGRESS.md`, commit, and push L2 milestone.
+1. Author L3 documents: `CHIP_ANATOMY_SPEC.md`, `DESIGN.md`, `ASSET_GUIDELINES.md`, and `ANIMATION_SPEC.md`.
+2. Update `DOCUMENTATION_PROGRESS.md`, commit, and push L3 milestone.
