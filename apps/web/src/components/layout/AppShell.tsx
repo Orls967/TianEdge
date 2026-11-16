@@ -195,11 +195,11 @@ export function AppShell({ children }: { children: ReactNode }) {
             <tbody>
               {[
                 ['?', 'Open this Keyboard Shortcuts reference'],
-                ['Esc', 'Close modals or clear component isolation'],
+                ['Esc', 'Close this dialog'],
+                ['R', 'Reset the 3D camera in Chip Anatomy'],
                 ['Space', 'Run / Pause CPU Simulator (when editor is unfocused)'],
-                ['F10 / Shift+S', 'Step one canonical stage in CPU Simulator'],
-                ['Shift+R', 'Reset CPU Simulator state'],
-                ['Arrow Left / Right', 'Step Backward / Forward in Instruction Journey'],
+                ['F10 / Shift+→', 'Step one full instruction in CPU Simulator'],
+                ['Shift+↓', 'Step one pipeline stage in CPU Simulator'],
               ].map(([key, desc]) => (
                 <tr key={key} style={{ borderBottom: '1px solid var(--border-subtle)' }}>
                   <td style={{ padding: '8px 4px', width: '150px' }}>

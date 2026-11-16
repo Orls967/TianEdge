@@ -43,7 +43,17 @@
 - `services/api/.venv/bin/pytest services/api -v`: **PASS** (5/5 API contract + zero-PII tests)
 - `npm --prefix apps/web run typecheck`: **PASS** (`tsc -b --pretty false`)
 - `npm --prefix apps/web run lint`: **PASS** (0 errors, 0 warnings)
-- `npm --prefix apps/web run test`: **PASS** (4 files, 17/17 tests)
+- `npm --prefix apps/web run test`: **PASS** (4 files, 18/18 tests, incl. simulator preset → insight cross-link check)
 - `npm --prefix apps/web run build`: **PASS** (`dist/404.html` generated)
 - `VITE_BASE_PATH="/TianEdge/" npm --prefix apps/web run build`: **PASS** (`dist/404.html` with `keepSegments=1`, assets under `/TianEdge/assets/`)
 - `npm --prefix apps/web run test:e2e`: **PASS** (4/4 Playwright specs: WebGL `.glb` telemetry `drawCalls=17`, `triangles=6492`, `fallbackAssets=0`; WASM canonical parity + `/journey` -> `/simulator` handoff; `1024x768` & `390x844` zero horizontal overflow; `axe-core` 0 critical/serious WCAG violations across all 6 routes)
+
+---
+
+## 4. Post-Release Polish (Milestone L10)
+
+- **GitHub Pages enabled** (source: GitHub Actions); live at https://orls967.github.io/TianEdge/. The first deploy had failed only because Pages was not enabled for the repository.
+- **UI fixes:** defined the missing `--space-5` token (page padding/gap had collapsed to 0 on Overview, Insights and Library); added a hamburger drawer below 1100 px; readable Journey stage tabs; `WASM Standby` status before the engine is requested; Simulator "Study" links show topic titles; keyboard-shortcut reference now matches the implemented keys.
+- **Bug fix:** simulator preset `relatedInsightIds` pointed to non-existent topic ids; remapped and covered by a regression test.
+- **3D fixes:** materials are recreated when transparency toggles (ghosted IHS now renders see-through); softer highlight on large package surfaces; camera dolly-out for whole-package framings on narrow viewports; on stacked layouts the 3D stage is shown before the component tree.
+- **README rewritten** with a live-site screenshot gallery (27 images in `docs/screenshots/`) captured by `npm run screenshots` (`apps/web/screenshots/capture.spec.ts`).
