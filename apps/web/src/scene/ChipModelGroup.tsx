@@ -221,7 +221,9 @@ export function ChipModelGroup({
                 const emissiveIntensity = isSimActive ? 1.0 : isSelected ? 0.7 : isHovered ? 0.35 : 0.15;
                 return (
                   <mesh
-                    name={`${comp.modelReference.meshPrefix}__procedural`}
+                    name={`${comp.modelReference.meshPrefix}__${
+                      comp.modelReference.assetFile === 'procedural' ? 'procedural' : 'fallback'
+                    }`}
                     position={fb.pos}
                     onClick={(e) => {
                       e.stopPropagation();

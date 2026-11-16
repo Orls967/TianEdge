@@ -1,6 +1,7 @@
 """Skeleton health tests for TIANEDGE FastAPI service."""
 
 from fastapi.testclient import TestClient
+
 from tianedge_api.main import app
 
 

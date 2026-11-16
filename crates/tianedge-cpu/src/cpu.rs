@@ -179,7 +179,10 @@ impl CpuEngine {
     }
 
     pub fn step_stage(&mut self) -> CpuSnapshot {
-        if matches!(self.status, ExecutionStatus::Halted | ExecutionStatus::Fault) {
+        if matches!(
+            self.status,
+            ExecutionStatus::Halted | ExecutionStatus::Fault
+        ) {
             return self.snapshot();
         }
         if self.program.is_empty() {
@@ -207,7 +210,10 @@ impl CpuEngine {
     }
 
     pub fn step_instruction(&mut self) -> CpuSnapshot {
-        if matches!(self.status, ExecutionStatus::Halted | ExecutionStatus::Fault) {
+        if matches!(
+            self.status,
+            ExecutionStatus::Halted | ExecutionStatus::Fault
+        ) {
             return self.snapshot();
         }
         if self.program.is_empty() {
@@ -229,7 +235,10 @@ impl CpuEngine {
 
         for _ in 0..target_cycles {
             self.step_stage();
-            if matches!(self.status, ExecutionStatus::Halted | ExecutionStatus::Fault) {
+            if matches!(
+                self.status,
+                ExecutionStatus::Halted | ExecutionStatus::Fault
+            ) {
                 break;
             }
         }
@@ -241,7 +250,10 @@ impl CpuEngine {
         let mut steps_run: u64 = 0;
 
         while steps_run < cap {
-            if matches!(self.status, ExecutionStatus::Halted | ExecutionStatus::Fault) {
+            if matches!(
+                self.status,
+                ExecutionStatus::Halted | ExecutionStatus::Fault
+            ) {
                 break;
             }
             if self.program.is_empty() {
@@ -249,13 +261,19 @@ impl CpuEngine {
             }
             self.step_stage();
             steps_run += 1;
-            if matches!(self.status, ExecutionStatus::Halted | ExecutionStatus::Fault) {
+            if matches!(
+                self.status,
+                ExecutionStatus::Halted | ExecutionStatus::Fault
+            ) {
                 break;
             }
         }
 
         if steps_run >= MAX_CYCLES_PER_RUN
-            && !matches!(self.status, ExecutionStatus::Halted | ExecutionStatus::Fault)
+            && !matches!(
+                self.status,
+                ExecutionStatus::Halted | ExecutionStatus::Fault
+            )
         {
             self.trigger_cycle_limit_watchdog();
         }
@@ -317,11 +335,7 @@ impl CpuEngine {
             ..Default::default()
         };
         self.set_active(
-            &[
-                "core-control-unit",
-                "mem-l1-icache",
-                "comm-internal-buses",
-            ],
+            &["core-control-unit", "mem-l1-icache", "comm-internal-buses"],
             &["pc_to_l1i", "l1i_to_ir"],
         );
     }
@@ -515,28 +529,19 @@ impl CpuEngine {
                     branch_taken = true;
                     self.latched_branch_taken = true;
                     self.latched_branch_target = instr.target_pc;
-                    self.set_active(
-                        &["core-control-unit", "core-alu"],
-                        &["decoder_to_cu"],
-                    );
+                    self.set_active(&["core-control-unit", "core-alu"], &["decoder_to_cu"]);
                 }
                 Opcode::Jz => {
                     branch_taken = self.flags.zero;
                     self.latched_branch_taken = branch_taken;
                     self.latched_branch_target = instr.target_pc;
-                    self.set_active(
-                        &["core-control-unit", "core-alu"],
-                        &["decoder_to_cu"],
-                    );
+                    self.set_active(&["core-control-unit", "core-alu"], &["decoder_to_cu"]);
                 }
                 Opcode::Jnz => {
                     branch_taken = !self.flags.zero;
                     self.latched_branch_taken = branch_taken;
                     self.latched_branch_target = instr.target_pc;
-                    self.set_active(
-                        &["core-control-unit", "core-alu"],
-                        &["decoder_to_cu"],
-                    );
+                    self.set_active(&["core-control-unit", "core-alu"], &["decoder_to_cu"]);
                 }
                 Opcode::Nop | Opcode::Halt => {
                     self.set_active(&["core-control-unit"], &["decoder_to_cu"]);
@@ -699,11 +704,7 @@ impl CpuEngine {
                 self.pc = self.pc.saturating_add(1);
                 self.executed_instructions += 1;
                 self.set_active(
-                    &[
-                        "core-registers",
-                        "comm-internal-buses",
-                        "core-control-unit",
-                    ],
+                    &["core-registers", "comm-internal-buses", "core-control-unit"],
                     &["alu_to_wb_regs"],
                 );
             }
@@ -717,11 +718,7 @@ impl CpuEngine {
                 self.pc = self.pc.saturating_add(1);
                 self.executed_instructions += 1;
                 self.set_active(
-                    &[
-                        "core-registers",
-                        "mem-l1-dcache",
-                        "comm-internal-buses",
-                    ],
+                    &["core-registers", "mem-l1-dcache", "comm-internal-buses"],
                     &["mdr_to_wb_regs"],
                 );
             }
@@ -729,7 +726,11 @@ impl CpuEngine {
                 self.pc = self.pc.saturating_add(1);
                 self.executed_instructions += 1;
                 self.set_active(
-                    &["mem-l1-dcache", "core-control-unit", "comm-memory-interface"],
+                    &[
+                        "mem-l1-dcache",
+                        "core-control-unit",
+                        "comm-memory-interface",
+                    ],
                     &["l1d_to_mem_if"],
                 );
             }

@@ -205,7 +205,7 @@ stateDiagram-v2
 ### 7.1 Performance Boundaries
 
 - **Main-Thread Protection:** Continuous simulator execution loops live strictly inside `cpu-worker.ts`; React state updates throttle high-speed continuous UI snapshots to at most 30 Hz when `executionSpeedMs < 33ms`, while retaining full fidelity for single-step mode.
-- **3D Rendering Budget:** Shared PBR materials, instanced solder bumps/electrical contacts, compressed GLB textures (`<= 1024x1024` or procedural normal/roughness maps), and `frameloop="always"` paused automatically when tab is hidden (`document.hidden`) or `prefers-reduced-motion` is active without active interaction.
+- **3D Rendering Budget:** Shared PBR materials, solder bumps/electrical contacts merged into one mesh per component, compressed GLB textures (`<= 1024x1024` or procedural normal/roughness maps), and `frameloop="always"` paused automatically when tab is hidden (`document.hidden`) or `prefers-reduced-motion` is active without active interaction.
 
 ### 7.2 Security & Safety Boundaries
 

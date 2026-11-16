@@ -1,5 +1,9 @@
 # Cross-Document Consistency Audit Report — TIANEDGE
 
+> [!NOTE]
+> **Historical record (Phase 0).** This file documents the specification phase that preceded implementation. It is kept for traceability and is no longer updated. Current status: [IMPLEMENTATION_PROGRESS.md](../../IMPLEMENTATION_PROGRESS.md) · live site: https://orls967.github.io/TianEdge/
+
+
 **Document ID:** `TIANEDGE-AUDIT-001`  
 **Product Name:** TIANEDGE — Semiconductor & Microprocessor Exploration Platform  
 **Audit Date:** 2026-11-16  
@@ -13,10 +17,10 @@ The Phase 0 documentation package was verified using a two-pass audit methodolog
 
 1. **Automated Structural & Cross-Reference Verification (Python Static Audit):**
    - Scanned all Markdown specifications for deprecated candidate product names, broken relative links (`./*.md`), malformed Mermaid blocks, and schema drift.
-   - Extracted all **36 canonical component IDs** from [CHIP_ANATOMY_SPEC.md](./CHIP_ANATOMY_SPEC.md) and verified 15-field completeness (`1..15`) on every component.
-   - Cross-checked every `Related Topics` slug inside `CHIP_ANATOMY_SPEC.md` against the **13 canonical topic IDs** in [ENGINEERING_CONTENT_SPEC.md](./ENGINEERING_CONTENT_SPEC.md).
-   - Cross-checked every `DataPathEdgeId` across [DATA_MODEL.md](./DATA_MODEL.md), [ANIMATION_SPEC.md](./ANIMATION_SPEC.md), and [INSTRUCTION_JOURNEY_SPEC.md](./INSTRUCTION_JOURNEY_SPEC.md).
-   - Verified `CpuSnapshot`, `ControlSignalsState`, `ParseError`, `ExecutionStage`, and API DTO parity across [SIMULATION_SPEC.md](./SIMULATION_SPEC.md), `DATA_MODEL.md`, and [API_CONTRACT.md](./API_CONTRACT.md).
+   - Extracted all **36 canonical component IDs** from [CHIP_ANATOMY_SPEC.md](../../CHIP_ANATOMY_SPEC.md) and verified 15-field completeness (`1..15`) on every component.
+   - Cross-checked every `Related Topics` slug inside `CHIP_ANATOMY_SPEC.md` against the **13 canonical topic IDs** in [ENGINEERING_CONTENT_SPEC.md](../../ENGINEERING_CONTENT_SPEC.md).
+   - Cross-checked every `DataPathEdgeId` across [DATA_MODEL.md](../../DATA_MODEL.md), [ANIMATION_SPEC.md](../../ANIMATION_SPEC.md), and [INSTRUCTION_JOURNEY_SPEC.md](../../INSTRUCTION_JOURNEY_SPEC.md).
+   - Verified `CpuSnapshot`, `ControlSignalsState`, `ParseError`, `ExecutionStage`, and API DTO parity across [SIMULATION_SPEC.md](../../SIMULATION_SPEC.md), `DATA_MODEL.md`, and [API_CONTRACT.md](../../API_CONTRACT.md).
 2. **Manual 16-Point Architectural Consistency Review:**
    Evaluated all 16 consistency dimensions mandated by Section 22 of the specification baseline, paying particular attention to sequential vs. pipelined execution semantics, physical vs. logical geometry, conceptual logic visualization vs. electrical transistor simulation, educational ISA boundaries, and local simulation independence.
 
@@ -26,23 +30,23 @@ The Phase 0 documentation package was verified using a two-pass audit methodolog
 
 All 17 peer Markdown specifications (plus `.gitignore`) were audited:
 
-1. [PRD.md](./PRD.md)
-2. [ARCHITECTURE.md](./ARCHITECTURE.md)
-3. [DESIGN.md](./DESIGN.md)
-4. [CHIP_ANATOMY_SPEC.md](./CHIP_ANATOMY_SPEC.md)
-5. [INSTRUCTION_JOURNEY_SPEC.md](./INSTRUCTION_JOURNEY_SPEC.md)
-6. [SIMULATION_SPEC.md](./SIMULATION_SPEC.md)
-7. [DATA_MODEL.md](./DATA_MODEL.md)
-8. [API_CONTRACT.md](./API_CONTRACT.md)
-9. [ASSET_GUIDELINES.md](./ASSET_GUIDELINES.md)
-10. [ENGINEERING_CONTENT_SPEC.md](./ENGINEERING_CONTENT_SPEC.md)
-11. [ANIMATION_SPEC.md](./ANIMATION_SPEC.md)
-12. [TEST_PLAN.md](./TEST_PLAN.md)
-13. [DEPLOYMENT.md](./DEPLOYMENT.md)
-14. [flow.md](./flow.md)
-15. [constraints.md](./constraints.md)
+1. [PRD.md](../../PRD.md)
+2. [ARCHITECTURE.md](../../ARCHITECTURE.md)
+3. [DESIGN.md](../../DESIGN.md)
+4. [CHIP_ANATOMY_SPEC.md](../../CHIP_ANATOMY_SPEC.md)
+5. [INSTRUCTION_JOURNEY_SPEC.md](../../INSTRUCTION_JOURNEY_SPEC.md)
+6. [SIMULATION_SPEC.md](../../SIMULATION_SPEC.md)
+7. [DATA_MODEL.md](../../DATA_MODEL.md)
+8. [API_CONTRACT.md](../../API_CONTRACT.md)
+9. [ASSET_GUIDELINES.md](../../ASSET_GUIDELINES.md)
+10. [ENGINEERING_CONTENT_SPEC.md](../../ENGINEERING_CONTENT_SPEC.md)
+11. [ANIMATION_SPEC.md](../../ANIMATION_SPEC.md)
+12. [TEST_PLAN.md](../../TEST_PLAN.md)
+13. [DEPLOYMENT.md](../../DEPLOYMENT.md)
+14. [flow.md](../../flow.md)
+15. [constraints.md](../../constraints.md)
 16. [DOCUMENTATION_PROGRESS.md](./DOCUMENTATION_PROGRESS.md)
-17. [README.md](./README.md) *(verified synchronously with finalization)*
+17. [README.md](../../README.md) *(verified synchronously with finalization)*
 
 ---
 

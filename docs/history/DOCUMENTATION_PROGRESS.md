@@ -1,5 +1,9 @@
 # TIANEDGE Documentation Progress Tracker
 
+> [!NOTE]
+> **Historical record (Phase 0).** This file documents the specification phase that preceded implementation. It is kept for traceability and is no longer updated. Current status: [IMPLEMENTATION_PROGRESS.md](../../IMPLEMENTATION_PROGRESS.md) · live site: https://orls967.github.io/TianEdge/
+
+
 **Project:** TIANEDGE — Semiconductor & Microprocessor Exploration Platform  
 **Repository:** `https://github.com/Orls967/TianEdge.git` (Branch: `main`)  
 **Phase:** Phase 0 — Complete Documentation Engineering & Specification Authoring  
@@ -87,4 +91,4 @@ Authoritative textbooks and official technical references used throughout specif
 
 ## 6. Next Actions
 
-1. Begin **Phase 1 — Monorepo & Application Foundation** per [flow.md](./flow.md) (scaffold `apps/web/`, `crates/tianedge-cpu/`, `services/api/`, and `apps/web/public/data/`).
+1. Begin **Phase 1 — Monorepo & Application Foundation** per [flow.md](../../flow.md) (scaffold `apps/web/`, `crates/tianedge-cpu/`, `services/api/`, and `apps/web/public/data/`).

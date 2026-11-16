@@ -132,7 +132,7 @@ Every component below strictly implements all 15 required metadata fields:
 9. **Relationships:** Directly interfaces `pkg-silicon-die` and `pkg-substrate`; electrically feeds `die-memory-controller` and `die-io-controller`.
 10. **Technical Parameters:** C4 bump pitch typically $\approx 100\text{–}150\ \mu\text{m}$ (micro-bumps $\approx 25\text{–}50\ \mu\text{m}$); thousands of connections per die; ultra-low single-bump inductance ($\sim\text{pH}$ range).
 11. **Real-World Application:** Flip-chip processors, 2.5D/3D stacked dies, and high-bandwidth package assemblies.
-12. **3D Representation:** Instanced metallic silver-gold micro-sphere grid visible underneath the raised die in `Exploded View` and `Section Cut` (pitch exaggerated slightly for visual legibility, documented as scaled educational reconstruction).
+12. **3D Representation:** 16 × 16 metallic silver-gold bump grid (one merged mesh) visible underneath the raised die in `Exploded View` and `Section Cut` (pitch exaggerated slightly for visual legibility, documented as scaled educational reconstruction).
 13. **Animation & Interaction:** Revealed smoothly as `pkg-silicon-die` lifts in `Exploded View`; subtle vertical pulse in `Signal Flow`.
 14. **Related Topics:** `power-consumption`, `thermal-management`
 15. **Technical References:** Weste & Harris (*CMOS VLSI Design*, Flip-Chip Packaging); IBM C4 flip-chip packaging literature.
@@ -149,7 +149,7 @@ Every component below strictly implements all 15 required metadata fields:
 9. **Relationships:** Bottom external boundary of `pkg-substrate`; indirectly supplies `mem-main-interface`, `die-io-controller`, and `comm-clock-distribution`.
 10. **Technical Parameters:** Desktop/server LGA pad counts commonly range from ~1,200 to >4,500+ contacts; contact pitch typically $\approx 0.8\text{–}1.0\ \text{mm}$.
 11. **Real-World Application:** Land Grid Array (LGA) sockets on modern desktop and server platforms; Ball Grid Array (BGA) on mobile/laptop processors.
-12. **3D Representation:** High-precision instanced warm-gold contact pad grid on the bottom surface of `pkg-substrate`.
+12. **3D Representation:** 26 × 26 warm-gold land grid (centre cavity with land-side capacitors) on the bottom surface of `pkg-substrate`, merged into one mesh.
 13. **Animation & Interaction:** Exposed when camera orbits beneath substrate or during `Exploded View` downward offset; clicking highlights external bus entry points.
 14. **Related Topics:** `clock-frequency`, `power-consumption`
 15. **Technical References:** JEDEC MO-series socket/package mechanical standards; Harris & Harris (*Digital Design and Computer Architecture*).

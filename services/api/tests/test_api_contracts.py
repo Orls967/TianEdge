@@ -1,8 +1,8 @@
 """API contract tests for TIANEDGE FastAPI backend (TC-INT-02)."""
 
 from fastapi.testclient import TestClient
-from tianedge_api.main import app
 
+from tianedge_api.main import app
 
 client = TestClient(app)
 

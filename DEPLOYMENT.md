@@ -2,7 +2,7 @@
 
 **Document ID:** `TIANEDGE-DEP-001`  
 **Product Name:** TIANEDGE — Semiconductor & Microprocessor Exploration Platform  
-**Status:** Specification Only (No Live Deployment Executed During Phase 0)  
+**Status:** Live — static frontend deployed to GitHub Pages at https://orls967.github.io/TianEdge/ by [`.github/workflows/deploy.yml`](./.github/workflows/deploy.yml) on every push to `main`. The FastAPI container is optional and not hosted.  
 
 ---
 
@@ -111,10 +111,10 @@ Before declaring any future deployment healthy, verify every step:
 
 ## 6. Known Operational Limitations
 
-- **GitHub Pages Static SPA Deep Links:** If browser History routing (`BrowserRouter`) is chosen over HashRouter without a `404.html` redirect shim, direct page refreshes on `/anatomy` or `/simulator` will hit GitHub Pages' static 404. Use HashRouter or the `404.html` redirect pattern explicitly during Phase 1/10.
+- **GitHub Pages Static SPA Deep Links:** Solved with the `404.html` redirect pattern: `apps/web/scripts/postbuild.mjs` copies the SPA shell to `dist/404.html` (`keepSegments=1` for the `/TianEdge/` base), so refreshing `/TianEdge/anatomy` or `/TianEdge/simulator` loads the app. The HTTP status of such a first hit is still `404`, which browsers ignore but link checkers may report.
 - **Mobile GPU Variance:** Heavy PBR lighting and high-DPI DPR (`window.devicePixelRatio > 2`) can throttle mobile GPUs; clamp R3F `<Canvas dpr={[1, 2]} />` to cap pixel fill-rate cleanly.
 - **No Server-Side Persistence in Core Offline Mode:** Without an optional database attached to the FastAPI container, in-memory/file analytics counters reset on container restart (never impacts user simulator or educational reading).
-- **Specification Status Notice:** This document specifies deployment architecture and verification procedures; **no application build or live deployment has been executed in Phase 0**.
+- **GitHub Pages must use the "GitHub Actions" source** (*Settings → Pages → Build and deployment*). If Pages is disabled, `actions/deploy-pages` fails with `HttpError: Not Found` even though the build succeeds.
 
 ---
 

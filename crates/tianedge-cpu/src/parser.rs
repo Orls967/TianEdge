@@ -94,14 +94,14 @@ fn parse_int_literal(token: &str, line: u32) -> Result<i32, ParseError> {
 
 fn is_bracketed(token: &str) -> Option<&str> {
     let t = token.trim();
-    t.strip_prefix('[').and_then(|s| s.strip_suffix(']')).map(str::trim)
+    t.strip_prefix('[')
+        .and_then(|s| s.strip_suffix(']'))
+        .map(str::trim)
 }
 
 fn is_valid_label_name(name: &str) -> bool {
     !name.is_empty()
-        && name
-            .chars()
-            .all(|c| c.is_ascii_alphanumeric() || c == '_')
+        && name.chars().all(|c| c.is_ascii_alphanumeric() || c == '_')
         && !name.chars().next().is_some_and(|c| c.is_ascii_digit())
 }
 
@@ -132,16 +132,19 @@ pub fn parse_program(source: &str) -> Result<Program, Vec<ParseError>> {
                 break;
             }
             let key = candidate.to_ascii_uppercase();
-            if labels.contains_key(&key) {
-                errors.push(ParseError {
-                    code: "DUPLICATE_LABEL".to_string(),
-                    line: line_no,
-                    column: 1,
-                    token: candidate.to_string(),
-                    message: format!("Duplicate label '{candidate}'."),
-                });
-            } else {
-                labels.insert(key, pending.len());
+            match labels.entry(key) {
+                std::collections::hash_map::Entry::Occupied(_) => {
+                    errors.push(ParseError {
+                        code: "DUPLICATE_LABEL".to_string(),
+                        line: line_no,
+                        column: 1,
+                        token: candidate.to_string(),
+                        message: format!("Duplicate label '{candidate}'."),
+                    });
+                }
+                std::collections::hash_map::Entry::Vacant(slot) => {
+                    slot.insert(pending.len());
+                }
             }
             remaining = remaining[colon_pos + 1..].trim();
             if remaining.is_empty() {
@@ -193,7 +196,8 @@ pub fn parse_program(source: &str) -> Result<Program, Vec<ParseError>> {
                         line,
                         column: 1,
                         token: item.raw_text.clone(),
-                        message: "LOAD expects 2 operands: LOAD Rd, imm or LOAD Rd, [addr].".to_string(),
+                        message: "LOAD expects 2 operands: LOAD Rd, imm or LOAD Rd, [addr]."
+                            .to_string(),
                     })
                 } else {
                     match parse_register(&ops[0], line) {
@@ -249,7 +253,8 @@ pub fn parse_program(source: &str) -> Result<Program, Vec<ParseError>> {
                         line,
                         column: 1,
                         token: item.raw_text.clone(),
-                        message: "LOADM expects 2 operands: LOADM Rd, addr or LOADM Rd, [Rs].".to_string(),
+                        message: "LOADM expects 2 operands: LOADM Rd, addr or LOADM Rd, [Rs]."
+                            .to_string(),
                     })
                 } else {
                     match parse_register(&ops[0], line) {
@@ -292,7 +297,8 @@ pub fn parse_program(source: &str) -> Result<Program, Vec<ParseError>> {
                         line,
                         column: 1,
                         token: item.raw_text.clone(),
-                        message: "STORE expects 2 operands: STORE Rs, addr or STORE Rs, [Rd].".to_string(),
+                        message: "STORE expects 2 operands: STORE Rs, addr or STORE Rs, [Rd]."
+                            .to_string(),
                     })
                 } else {
                     match parse_register(&ops[0], line) {
@@ -360,7 +366,10 @@ pub fn parse_program(source: &str) -> Result<Program, Vec<ParseError>> {
                         line,
                         column: 1,
                         token: item.raw_text.clone(),
-                        message: format!("{} expects 3 register operands: {} Rd, Ra, Rb.", item.mnemonic, item.mnemonic),
+                        message: format!(
+                            "{} expects 3 register operands: {} Rd, Ra, Rb.",
+                            item.mnemonic, item.mnemonic
+                        ),
                     })
                 } else {
                     let op = match item.mnemonic.as_str() {
@@ -420,7 +429,10 @@ pub fn parse_program(source: &str) -> Result<Program, Vec<ParseError>> {
                         line,
                         column: 1,
                         token: item.raw_text.clone(),
-                        message: format!("{} expects 1 target label or instruction index.", item.mnemonic),
+                        message: format!(
+                            "{} expects 1 target label or instruction index.",
+                            item.mnemonic
+                        ),
                     })
                 } else {
                     let op = match item.mnemonic.as_str() {
@@ -443,7 +455,10 @@ pub fn parse_program(source: &str) -> Result<Program, Vec<ParseError>> {
                             raw_text: item.raw_text.clone(),
                         })
                     } else if target_tok.starts_with('-')
-                        || target_tok.chars().next().is_some_and(|c| c.is_ascii_digit())
+                        || target_tok
+                            .chars()
+                            .next()
+                            .is_some_and(|c| c.is_ascii_digit())
                     {
                         parse_int_literal(target_tok, line).map(|idx| Instruction {
                             opcode: op,
