@@ -3,6 +3,7 @@ name = "tianedge-api"
 version = "1.0.0"
 description = "Optional FastAPI educational content, search, and zero-PII analytics service for TIANEDGE"
 requires-python = ">=3.11"
+license = { text = "MIT" }
 dependencies = [
     "fastapi>=0.115.0",
     "pydantic>=2.9.0",

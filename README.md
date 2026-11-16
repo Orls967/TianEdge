@@ -14,6 +14,7 @@ Interactive 3D chip dissection, a guided instruction walkthrough and a determini
 ![Rust](https://img.shields.io/badge/Rust-WASM-orange?logo=rust)
 ![React](https://img.shields.io/badge/React-Three.js%20%2F%20R3F-61DAFB?logo=react)
 ![Python](https://img.shields.io/badge/Python-FastAPI-3776AB?logo=python)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
 **[▶ Open the live demo](https://orls967.github.io/TianEdge/)**
 
@@ -48,6 +49,7 @@ Interactive 3D chip dissection, a guided instruction walkthrough and a determini
 - [Measured footprint](#measured-footprint)
 - [Documentation index](#documentation-index)
 - [Known limitations](#known-limitations)
+- [License](#license)
 
 ---
 
@@ -534,6 +536,12 @@ Use `SHOTS_BASE_URL=http://127.0.0.1:4173/` against a local `npm run build && np
 3. **No caches in the simulator.** L1/L2/L3 appear in the 3D model and in the content, but simulated memory accesses go straight to the 256-word data memory.
 4. **The hosted demo has no backend.** GitHub Pages serves static files, so `API Synced` mode needs a locally run (or separately deployed) FastAPI service. No feature depends on it.
 5. **Desktop-first.** Mobile works, but the three-panel workbenches are easiest to use at 1280 px and wider.
+
+---
+
+## License
+
+Released under the [MIT License](LICENSE). This covers the source code, the educational content in `apps/web/public/data/` and the procedurally generated 3D models in `apps/web/public/models/`. Third-party libraries keep their own licenses.
 
 ---
 
