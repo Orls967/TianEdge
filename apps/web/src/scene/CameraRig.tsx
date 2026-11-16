@@ -55,10 +55,11 @@ export function CameraRig({
   useEffect(() => {
     if (!autoCameraEnabled) return;
     const toTarget = new THREE.Vector3(...preset.target);
-    const toPos = new THREE.Vector3(...preset.position)
-      .sub(toTarget)
-      .multiplyScalar(distanceScale)
-      .add(toTarget);
+    const offset = new THREE.Vector3(...preset.position).sub(toTarget);
+    // Only whole-package framings (distance > 3.2) need the dolly-out; close-ups of small
+    // blocks such as the ALU would otherwise shrink to a speck.
+    if (offset.length() > 3.2) offset.multiplyScalar(distanceScale);
+    const toPos = offset.add(toTarget);
 
     if (reducedMotion) {
       camera.position.copy(toPos);

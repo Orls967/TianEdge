@@ -562,6 +562,15 @@
   .te-scroll-pane {
     max-height: none;
   }
+  /* Stacked layout: show the 3D stage first, keep the 36-item tree compact and scrollable. */
+  .te-anatomy-shell > :nth-child(2) {
+    order: -1;
+    min-height: 420px;
+  }
+  .te-anatomy-shell > :first-child {
+    max-height: 340px;
+    overflow-y: auto;
+  }
 }
 
 .te-katex-block .katex-display {
