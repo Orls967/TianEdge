@@ -12,7 +12,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
-    "build:wasm": "wasm-pack build ../../crates/tianedge-cpu --target web --release --out-dir ../../apps/web/src/wasm"
+    "build:wasm": "wasm-pack build ../../crates/tianedge-cpu --target web --release --out-dir ../../apps/web/src/wasm",
+    "screenshots": "playwright test --config playwright.screenshots.config.ts"
   },
   "dependencies": {
     "@react-three/drei": "^9.114.3",

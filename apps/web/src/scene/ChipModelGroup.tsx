@@ -163,13 +163,13 @@ export function ChipModelGroup({
               matchedMeshes.map(({ nodeName, mesh }) => {
                 const origMat = mesh.material as THREE.MeshStandardMaterial | undefined;
                 const baseColor = origMat?.color ? `#${origMat.color.getHexString()}` : '#475569';
-                const emissiveIntensity = isSimActive
-                  ? 0.95
-                  : isSelected
-                    ? 0.72
-                    : isHovered
-                      ? 0.35
-                      : 0;
+                // Large flat package surfaces (IHS lid, substrate) blow out to white under a strong
+                // emissive tint, so they get a softer highlight; ghosted shells get none at all.
+                const isLargeSurface = comp.groupId === 'cpu-package';
+                const highlightScale = vis.ghosted ? 0 : isLargeSurface ? 0.35 : 1;
+                const emissiveIntensity =
+                  (isSimActive ? 0.95 : isSelected ? 0.72 : isHovered ? 0.35 : 0) * highlightScale;
+                const isTransparent = vis.ghosted || vis.opacity < 1;
                 return (
                   <mesh
                     key={nodeName}
@@ -192,12 +192,16 @@ export function ChipModelGroup({
                     }}
                   >
                     <meshStandardMaterial
+                      // three.js only recompiles the shader for a `transparent` flip when the
+                      // material is recreated, so key on it (otherwise ghosted shells render opaque).
+                      key={isTransparent ? 'transparent' : 'opaque'}
                       color={baseColor}
                       metalness={origMat?.metalness ?? 0.45}
                       roughness={origMat?.roughness ?? 0.38}
                       emissive={isSimActive || isSelected || isHovered ? highlightHex : '#000000'}
                       emissiveIntensity={emissiveIntensity}
-                      transparent={vis.ghosted || vis.opacity < 1}
+                      transparent={isTransparent}
+                      depthWrite={!isTransparent}
                       opacity={vis.opacity}
                       wireframe={vis.ghosted && mode === 'component_isolation'}
                       clippingPlanes={clippingPlanes}
@@ -231,6 +235,7 @@ export function ChipModelGroup({
                   >
                     <boxGeometry args={fb.size} />
                     <meshStandardMaterial
+                      key={vis.ghosted || vis.opacity < 1 ? 'transparent' : 'opaque'}
                       color={fb.color}
                       metalness={0.5}
                       roughness={0.35}

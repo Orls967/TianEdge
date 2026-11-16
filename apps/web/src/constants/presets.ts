@@ -16,11 +16,7 @@ export const SIMULATOR_PRESETS: SimulatorPreset[] = [
     description:
       'Loads immediate values into R1 and R2, computes R3 = R1 + R2 inside the ALU, and commits R3 to data memory address 100.',
     expectedOutcome: 'R1=10, R2=20, R3=30, MEM[100]=30 in 24 clock cycles.',
-    relatedInsightIds: [
-      'insight-03-isa-machine-code',
-      'insight-04-instruction-cycle',
-      'insight-05-alu-arithmetic',
-    ],
+    relatedInsightIds: ['isa', 'cpu-pipelining', 'von-neumann-architecture'],
     source: `; TIANEDGE Canonical Baseline Program
 LOAD R1, 10
 LOAD R2, 20
@@ -34,7 +30,7 @@ STORE R3, 100`,
     description:
       'Demonstrates moving a register operand through the Memory Data Register (MDR) and Memory Address Register (MAR) into Data Memory and reading it back.',
     expectedOutcome: 'MEM[100]=42, R2=42, clockCycles=24.',
-    relatedInsightIds: ['insight-06-registers-vs-ram', 'insight-07-memory-hierarchy'],
+    relatedInsightIds: ['cache-hierarchy'],
     source: `; Data Memory Write & Read-Back
 LOAD R1, 42
 STORE R1, 100
@@ -48,7 +44,7 @@ HALT`,
     description:
       'Accumulates integers 1 through 5 in R1 using a loop counter in R2 and limit check via CMP/JNZ/JZ.',
     expectedOutcome: 'R1=15 after loop termination.',
-    relatedInsightIds: ['insight-04-instruction-cycle', 'insight-10-clock-timing'],
+    relatedInsightIds: ['cpu-pipelining', 'clock-frequency'],
     source: `; Sum integers 1..5 in R1
 LOAD R1, 0
 LOAD R2, 1
@@ -72,7 +68,7 @@ HALT`,
     description:
       'Exercises SUB, MUL, AND, OR, XOR and tests Zero (Z) and Negative (N) processor status flags before branching.',
     expectedOutcome: 'R3=0 (Z=true via SUB), R7=-5 (N=true), R5=42.',
-    relatedInsightIds: ['insight-05-alu-arithmetic', 'insight-02-transistors-cmos-logic'],
+    relatedInsightIds: ['von-neumann-architecture', 'power-consumption'],
     source: `; ALU Operations & Condition Flags
 LOAD R1, 12
 LOAD R2, 12
@@ -97,7 +93,7 @@ HALT`,
     description:
       'Uses R1 as a dynamic memory pointer with STORE Rs, [Rd] and LOADM Rd, [Rs].',
     expectedOutcome: 'MEM[50]=77, R3=77.',
-    relatedInsightIds: ['insight-06-registers-vs-ram', 'insight-08-system-bus'],
+    relatedInsightIds: ['cache-hierarchy', 'von-neumann-architecture'],
     source: `; Register-Indirect Addressing
 LOAD R1, 50
 LOAD R2, 77

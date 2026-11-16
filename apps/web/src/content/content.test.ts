@@ -52,3 +52,14 @@ describe('Educational Content Bundle Integrity & Local Search', () => {
     expect(aluResults.results[0]?.id).toBe('core-alu');
   });
 });
+
+describe('simulator preset cross-links', () => {
+  it('every relatedInsightId on a simulator preset resolves to a real Engineering Insights topic', async () => {
+    const { SIMULATOR_PRESETS } = await import('../constants/presets');
+    const topicIds = new Set(loadDiskBundle().insights.map((t) => t.id));
+    const broken = SIMULATOR_PRESETS.flatMap((p) =>
+      p.relatedInsightIds.filter((id) => !topicIds.has(id)).map((id) => `${p.id} -> ${id}`),
+    );
+    expect(broken).toEqual([]);
+  });
+});

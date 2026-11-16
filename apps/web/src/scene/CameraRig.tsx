@@ -30,7 +30,10 @@ export function CameraRig({
   onUserInteractingChange,
 }: CameraRigProps) {
   const controlsRef = useRef<OrbitControlsImpl | null>(null);
-  const { camera } = useThree();
+  const { camera, size } = useThree();
+  // Narrow / portrait viewports cut off the package horizontally: dolly out proportionally.
+  const aspect = size.width / Math.max(1, size.height);
+  const distanceScale = Math.min(2.1, Math.max(1, 1.45 / aspect));
   const isInteractingRef = useRef(false);
 
   const transitionRef = useRef<{
@@ -51,8 +54,11 @@ export function CameraRig({
 
   useEffect(() => {
     if (!autoCameraEnabled) return;
-    const toPos = new THREE.Vector3(...preset.position);
     const toTarget = new THREE.Vector3(...preset.target);
+    const toPos = new THREE.Vector3(...preset.position)
+      .sub(toTarget)
+      .multiplyScalar(distanceScale)
+      .add(toTarget);
 
     if (reducedMotion) {
       camera.position.copy(toPos);
@@ -76,7 +82,7 @@ export function CameraRig({
       fromTarget: currentTarget,
       toTarget,
     };
-  }, [preset, resetNonce, autoCameraEnabled, reducedMotion, camera]);
+  }, [preset, resetNonce, autoCameraEnabled, reducedMotion, camera, distanceScale]);
 
   useFrame((_, delta) => {
     const tr = transitionRef.current;

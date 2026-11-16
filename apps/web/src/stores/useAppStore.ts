@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 
-export type WasmStatus = 'initializing' | 'ready' | 'error';
+// 'idle': engine not requested yet (it is lazy-loaded by /journey and /simulator).
+export type WasmStatus = 'idle' | 'initializing' | 'ready' | 'error';
 export type BackendSyncStatus = 'local_mode' | 'probing' | 'online_synced';
 
 interface AppState {
@@ -28,7 +29,7 @@ const getInitialReducedMotion = (): boolean => {
 export const useAppStore = create<AppState>((set) => ({
   reducedMotion: getInitialReducedMotion(),
   systemReducedMotion: getInitialReducedMotion(),
-  wasmStatus: 'initializing',
+  wasmStatus: 'idle',
   wasmError: null,
   backendStatus: import.meta.env.VITE_API_BASE_URL ? 'probing' : 'local_mode',
   shortcutsOpen: false,

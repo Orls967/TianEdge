@@ -1,6 +1,6 @@
-import { ReactNode, useEffect } from 'react';
-import { NavLink } from 'react-router-dom';
-import { Cpu, Keyboard, Pause, Play } from 'lucide-react';
+import { ReactNode, useEffect, useState } from 'react';
+import { NavLink, useLocation } from 'react-router-dom';
+import { Cpu, Keyboard, Menu, Pause, Play, X } from 'lucide-react';
 import { useAppStore } from '../../stores/useAppStore';
 import { Modal } from '../ui/Modal';
 
@@ -17,6 +17,13 @@ export function AppShell({ children }: { children: ReactNode }) {
     setShortcutsOpen,
     setTabHidden,
   } = useAppStore();
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
+  const location = useLocation();
+
+  // Close the mobile drawer whenever the route changes.
+  useEffect(() => {
+    setMobileNavOpen(false);
+  }, [location.pathname]);
 
   useEffect(() => {
     const mq = window.matchMedia?.('(prefers-reduced-motion: reduce)');
@@ -51,9 +58,17 @@ export function AppShell({ children }: { children: ReactNode }) {
       ? 'WASM Ready'
       : wasmStatus === 'error'
         ? 'WASM Fault'
-        : 'WASM Loading';
+        : wasmStatus === 'idle'
+          ? 'WASM Standby'
+          : 'WASM Loading';
   const wasmDotClass =
-    wasmStatus === 'ready' ? 'success' : wasmStatus === 'error' ? 'error' : 'warning';
+    wasmStatus === 'ready'
+      ? 'success'
+      : wasmStatus === 'error'
+        ? 'error'
+        : wasmStatus === 'idle'
+          ? 'idle'
+          : 'warning';
 
   const syncLabel =
     backendStatus === 'online_synced'
@@ -91,7 +106,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         </nav>
 
         <div className="nav-utilities">
-          <span className="status-pill hide-compact" title="Rust/WASM CPU engine runtime status">
+          <span className="status-pill hide-compact" title="Rust/WASM CPU engine status (loads on demand in Instruction Journey and CPU Simulator)">
             <span className={`status-dot ${wasmDotClass}`} aria-hidden="true" />
             <span>{wasmLabel}</span>
           </span>
@@ -122,15 +137,50 @@ export function AppShell({ children }: { children: ReactNode }) {
 
           <button
             type="button"
-            className="btn btn-sm btn-ghost"
+            className="btn btn-sm btn-ghost hide-mobile"
             onClick={() => setShortcutsOpen(true)}
             aria-label="Keyboard shortcuts help"
             title="Keyboard shortcuts (?)"
           >
             <Keyboard size={15} />
           </button>
+          <button
+            type="button"
+            className="btn btn-sm btn-ghost nav-menu-toggle"
+            onClick={() => setMobileNavOpen((v) => !v)}
+            aria-expanded={mobileNavOpen}
+            aria-controls="mobile-nav-drawer"
+            aria-label={mobileNavOpen ? 'Close navigation menu' : 'Open navigation menu'}
+          >
+            {mobileNavOpen ? <X size={16} /> : <Menu size={16} />}
+          </button>
         </div>
       </header>
+
+      {mobileNavOpen && (
+        <nav id="mobile-nav-drawer" className="mobile-nav-drawer" aria-label="Mobile navigation">
+          {PRIMARY_ROUTES.map((item) => (
+            <NavLink
+              key={item.to}
+              to={item.to}
+              end={item.end}
+              className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`}
+            >
+              {item.label}
+            </NavLink>
+          ))}
+          <div className="mobile-nav-status">
+            <span className="status-pill">
+              <span className={`status-dot ${wasmDotClass}`} aria-hidden="true" />
+              <span>{wasmLabel}</span>
+            </span>
+            <span className="status-pill">
+              <span className={`status-dot ${syncDotClass}`} aria-hidden="true" />
+              <span>{syncLabel}</span>
+            </span>
+          </div>
+        </nav>
+      )}
 
       <main id="main-content" className="main-content" tabIndex={-1}>
         {children}

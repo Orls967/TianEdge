@@ -13,6 +13,16 @@ import { JOURNEY_SCENARIOS, useJourneyStore } from '../stores/useJourneyStore';
 import { useSimulatorStore } from '../stores/useSimulatorStore';
 import type { JourneyScenarioId } from '../types/models';
 
+
+const STAGE_SHORT_LABEL: Record<string, string> = {
+  FETCH: 'Fetch',
+  DECODE: 'Decode',
+  REGISTER_READ: 'Reg Read',
+  EXECUTE: 'Execute',
+  MEMORY_ACCESS: 'Memory',
+  WRITE_BACK: 'Write',
+};
+
 export function InstructionJourneyPage() {
   const navigate = useNavigate();
   const { bundle, initContent } = useContentStore();
@@ -142,7 +152,7 @@ export function InstructionJourneyPage() {
                 }}
                 title={st.title}
               >
-                {idx + 1}. {st.stage.replace('_', ' ').slice(0, 5)}
+                {idx + 1}. {STAGE_SHORT_LABEL[st.stage] ?? st.stage}
               </button>
             );
           })}

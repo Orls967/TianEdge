@@ -743,7 +743,7 @@ export function CpuSimulatorPage() {
             <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', paddingTop: '4px' }}>
               {activePreset.relatedInsightIds.map((id) => (
                 <Link key={id} to={`/insights?topic=${encodeURIComponent(id)}`} className="te-btn te-btn-sm">
-                  Study Concept
+                  Study: {bundle?.insights.find((t) => t.id === id)?.title ?? id}
                 </Link>
               ))}
             </div>
