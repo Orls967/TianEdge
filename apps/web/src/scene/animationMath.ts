@@ -74,10 +74,11 @@ export function computeComponentVisibility(
     if (selectedComponentId && component.id === selectedComponentId) {
       return { visible: true, opacity: 1, ghosted: false };
     }
-    // Keep thin ghost reference silhouette for structural context
+    // Keep a faint translucent silhouette of the substrate and die for structural context.
+    // (Dense arrays such as C4 bumps / LGA pads and the lid are dropped: as ghosts they only add noise.)
     return {
-      visible: component.groupId === 'cpu-package' || component.groupId === 'silicon-die',
-      opacity: 0.14,
+      visible: component.id === 'pkg-substrate' || component.id === 'pkg-silicon-die' || component.groupId === 'silicon-die',
+      opacity: 0.1,
       ghosted: true,
     };
   }

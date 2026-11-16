@@ -581,3 +581,27 @@
   border: 1px solid var(--border-subtle);
   overflow-x: auto;
 }
+
+.te-scene-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 9px;
+  border-radius: 999px;
+  border: 1px solid rgba(0, 229, 255, 0.55);
+  background: rgba(7, 10, 18, 0.82);
+  color: #e0faff;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  white-space: nowrap;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
+  transform: translateY(-50%);
+}
+
+.te-scene-label__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent-primary);
+  box-shadow: 0 0 6px rgba(0, 229, 255, 0.8);
+}

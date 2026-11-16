@@ -14,6 +14,8 @@ interface CameraRigProps {
   hasActiveSimulation: boolean;
   isOverviewHero: boolean;
   autoCameraEnabled?: boolean;
+  /** Isolation close-up: pull the camera in on small sub-blocks. */
+  closeUp?: boolean;
   onUserInteractingChange: (interacting: boolean) => void;
 }
 
@@ -27,6 +29,7 @@ export function CameraRig({
   hasActiveSimulation,
   isOverviewHero,
   autoCameraEnabled = true,
+  closeUp = false,
   onUserInteractingChange,
 }: CameraRigProps) {
   const controlsRef = useRef<OrbitControlsImpl | null>(null);
@@ -59,6 +62,7 @@ export function CameraRig({
     // Only whole-package framings (distance > 3.2) need the dolly-out; close-ups of small
     // blocks such as the ALU would otherwise shrink to a speck.
     if (offset.length() > 3.2) offset.multiplyScalar(distanceScale);
+    else if (closeUp) offset.multiplyScalar(0.55);
     const toPos = offset.add(toTarget);
 
     if (reducedMotion) {
@@ -83,7 +87,7 @@ export function CameraRig({
       fromTarget: currentTarget,
       toTarget,
     };
-  }, [preset, resetNonce, autoCameraEnabled, reducedMotion, camera, distanceScale]);
+  }, [preset, resetNonce, autoCameraEnabled, reducedMotion, camera, distanceScale, closeUp]);
 
   useFrame((_, delta) => {
     const tr = transitionRef.current;

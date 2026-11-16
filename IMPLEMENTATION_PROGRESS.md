@@ -57,3 +57,12 @@
 - **Bug fix:** simulator preset `relatedInsightIds` pointed to non-existent topic ids; remapped and covered by a regression test.
 - **3D fixes:** materials are recreated when transparency toggles (ghosted IHS now renders see-through); softer highlight on large package surfaces; camera dolly-out for whole-package framings on narrow viewports; on stacked layouts the 3D stage is shown before the component tree.
 - **README rewritten** with a live-site screenshot gallery (27 images in `docs/screenshots/`) captured by `npm run screenshots` (`apps/web/screenshots/capture.spec.ts`).
+
+## 5. 3D Model Upgrade (Milestone L11)
+
+- `generate_models.py` v2: new `add_cylinder` / `add_frame` / `add_grid` primitives, uint16 index guard, 3 extra PBR materials (MLCC ceramic, laser mark, amber logic).
+- Package: IHS flange/top land/marking/pin-1, seal ring, underfill fillet, 44 MLCCs + fiducials, 16x16 C4 bumps, 26x26 LGA lands with land-side capacitor cavity. The old `HardwareInstancedArrays` (which did not follow exploded offsets) was removed; bumps and pads now live in the GLB and move with their component.
+- Die and core 0 sub-blocks detailed (bit-sliced ALU + flags, microcode ROM, R0-R7, PLA decoder, SRAM macros, L3 slices, ring stops, channel PHYs, SerDes lanes); cores 1-3 replicated.
+- Digital-logic pods given recognisable silhouettes; each logic component's camera preset now targets its own pod.
+- Scene: procedural Lightformer environment for metal reflections, floating selection label, translucent (not wireframe) isolation ghosts, isolation close-up for small blocks.
+- Assets: 24,027 GLB triangles (was 1,692). `/anatomy` WebGL probe: 23 draw calls, 20,383 triangles (budget 120 / 150,000).

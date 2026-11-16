@@ -1,12 +1,13 @@
 import { Component, type ReactNode, useState } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
+import { Environment, Lightformer } from '@react-three/drei';
 import type { ChipComponent, VisualizationMode } from '../types/models';
 import { useAppStore } from '../stores/useAppStore';
 import { useAnatomyStore } from '../stores/useAnatomyStore';
 import { CameraRig } from './CameraRig';
 import { ChipModelGroup } from './ChipModelGroup';
+import { SelectionLabel } from './SelectionLabel';
 import {
-  HardwareInstancedArrays,
   SignalFlowOverlay,
   ThermalAirflowRibbons,
 } from './ProceduralSubassemblies';
@@ -202,6 +203,13 @@ function WebGLStage({
       <directionalLight position={[5, 8, 6]} intensity={1.25} color="#f8fafc" />
       <directionalLight position={[-5, 4, -5]} intensity={0.55} color="#38bdf8" />
       <pointLight position={[0, 2.2, 0]} intensity={0.45} color="#fbbf24" />
+      {/* Procedural studio reflections (no HDR download): metals such as the nickel lid,
+          gold bumps and LGA pads need something to reflect or they render near-black. */}
+      <Environment resolution={128} frames={1}>
+        <Lightformer form="rect" intensity={1.6} position={[0, 5, 0]} rotation-x={Math.PI / 2} scale={[8, 8, 1]} />
+        <Lightformer form="rect" intensity={0.8} color="#7dd3fc" position={[-5, 2, 0]} rotation-y={Math.PI / 2} scale={[6, 3, 1]} />
+        <Lightformer form="rect" intensity={0.6} color="#fde68a" position={[5, 1.5, 2]} rotation-y={-Math.PI / 2} scale={[6, 3, 1]} />
+      </Environment>
 
       <gridHelper args={[10, 20, '#1e293b', '#0f172a']} position={[0, -0.36, 0]} />
 
@@ -213,6 +221,7 @@ function WebGLStage({
         hasActiveSimulation={activeComponentIds.length > 0}
         isOverviewHero={isOverviewHero}
         autoCameraEnabled={autoCameraEnabled}
+        closeUp={effectiveMode === 'component_isolation' && !selectedComponentId?.startsWith('logic-')}
         onUserInteractingChange={setUserInteracting}
       />
 
@@ -234,19 +243,12 @@ function WebGLStage({
         onHoverComponent={hoverComponent}
       />
 
-      <HardwareInstancedArrays
-        showSolderBumps={
-          !hiddenComponents['pkg-solder-bumps'] &&
-          !hiddenGroups['cpu-package'] &&
-          effectiveMode !== 'component_isolation'
-        }
-        showLgaPads={
-          !hiddenComponents['pkg-electrical-contacts'] &&
-          !hiddenGroups['cpu-package'] &&
-          effectiveMode !== 'component_isolation'
-        }
-        explodedMode={effectiveMode === 'exploded_view'}
-      />
+      {!isOverviewHero && (
+        <SelectionLabel
+          component={components.find((c) => c.id === selectedComponentId)}
+          mode={effectiveMode}
+        />
+      )}
 
       <SignalFlowOverlay
         mode={effectiveMode}

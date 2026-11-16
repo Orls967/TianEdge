@@ -1,32 +1,41 @@
 {
   "version": 1,
   "generatedBy": "apps/web/scripts/generate_models.py",
-  "totalTrianglesInGlb": 1692,
+  "totalTrianglesInGlb": 24027,
   "files": {
     "cpu_package_v1.glb": {
-      "nodeCount": 5,
-      "triangles": 784,
-      "bytes": 47388,
+      "nodeCount": 11,
+      "triangles": 18211,
+      "bytes": 1093672,
       "nodes": [
         "tianedge__pkg-ihs__lid",
+        "tianedge__pkg-ihs__marking",
+        "tianedge__pkg-ihs__pin1-mark",
         "tianedge__pkg-silicon-die__slab",
+        "tianedge__pkg-silicon-die__seal-ring",
         "tianedge__pkg-substrate__board",
+        "tianedge__pkg-substrate__mlcc",
+        "tianedge__pkg-substrate__terminals",
         "tianedge__pkg-solder-bumps__array",
-        "tianedge__pkg-electrical-contacts__pads"
+        "tianedge__pkg-electrical-contacts__pads",
+        "tianedge__pkg-electrical-contacts__land-side-caps"
       ]
     },
     "cpu_die_core_v1.glb": {
-      "nodeCount": 19,
-      "triangles": 488,
-      "bytes": 40160,
+      "nodeCount": 22,
+      "triangles": 4424,
+      "bytes": 258584,
       "nodes": [
         "tianedge__die-cpu-cores__tiles",
+        "tianedge__die-cpu-cores__outline",
+        "tianedge__die-cpu-cores__replica-blocks",
         "tianedge__die-cache-regions__banks",
         "tianedge__die-execution-units__zone",
         "tianedge__die-interconnect__ring",
         "tianedge__die-memory-controller__block",
         "tianedge__die-io-controller__block",
         "tianedge__core-alu__unit",
+        "tianedge__core-alu__flags",
         "tianedge__core-control-unit__sequencer",
         "tianedge__core-registers__bank",
         "tianedge__core-instruction-decoder__pla",
@@ -42,11 +51,12 @@
       ]
     },
     "logic_foundation_v1.glb": {
-      "nodeCount": 7,
-      "triangles": 420,
-      "bytes": 28432,
+      "nodeCount": 8,
+      "triangles": 1392,
+      "bytes": 87988,
       "nodes": [
         "tianedge__logic-transistors__mosfet",
+        "tianedge__logic-transistors__gate-stack",
         "tianedge__logic-gates__nand_nor_xor",
         "tianedge__logic-flip-flops__dff",
         "tianedge__logic-multiplexers__mux",

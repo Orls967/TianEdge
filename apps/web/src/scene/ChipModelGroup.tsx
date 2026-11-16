@@ -163,10 +163,15 @@ export function ChipModelGroup({
               matchedMeshes.map(({ nodeName, mesh }) => {
                 const origMat = mesh.material as THREE.MeshStandardMaterial | undefined;
                 const baseColor = origMat?.color ? `#${origMat.color.getHexString()}` : '#475569';
-                // Large flat package surfaces (IHS lid, substrate) blow out to white under a strong
-                // emissive tint, so they get a softer highlight; ghosted shells get none at all.
-                const isLargeSurface = comp.groupId === 'cpu-package';
-                const highlightScale = vis.ghosted ? 0 : isLargeSurface ? 0.35 : 1;
+                // Large flat package surfaces (IHS lid, substrate) and multi-material logic pods wash out
+                // under a strong emissive tint, so they get a softer highlight; ghosted shells get none at all.
+                const highlightScale = vis.ghosted
+                  ? 0
+                  : comp.groupId === 'digital-logic'
+                    ? 0.1
+                    : comp.groupId === 'cpu-package'
+                      ? 0.35
+                      : 1;
                 const emissiveIntensity =
                   (isSimActive ? 0.95 : isSelected ? 0.72 : isHovered ? 0.35 : 0) * highlightScale;
                 const isTransparent = vis.ghosted || vis.opacity < 1;
@@ -203,7 +208,6 @@ export function ChipModelGroup({
                       transparent={isTransparent}
                       depthWrite={!isTransparent}
                       opacity={vis.opacity}
-                      wireframe={vis.ghosted && mode === 'component_isolation'}
                       clippingPlanes={clippingPlanes}
                       clipShadows={false}
                       side={mode === 'section_cut' ? THREE.DoubleSide : THREE.FrontSide}

@@ -1,75 +1,8 @@
-import { useEffect, useMemo, useRef } from 'react';
+import { useMemo, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import type { DataPathEdgeId, VisualizationMode } from '../types/models';
 import { DATA_PATH_ROUTES } from './dataPaths';
-
-interface InstancedArraysProps {
-  showSolderBumps: boolean;
-  showLgaPads: boolean;
-  explodedMode: boolean;
-}
-
-export function HardwareInstancedArrays({
-  showSolderBumps,
-  showLgaPads,
-  explodedMode,
-}: InstancedArraysProps) {
-  const bumpRef = useRef<THREE.InstancedMesh>(null);
-  const padRef = useRef<THREE.InstancedMesh>(null);
-
-  const bumpCount = 100; // 10x10 C4 array
-  const padCount = 144; // 12x12 perimeter-focused LGA array
-
-  useEffect(() => {
-    const mesh = bumpRef.current;
-    if (!mesh) return;
-    const dummy = new THREE.Object3D();
-    const y = explodedMode ? 0.24 : 0.068;
-    let idx = 0;
-    for (let ix = 0; ix < 10; ix++) {
-      for (let iz = 0; iz < 10; iz++) {
-        dummy.position.set((ix - 4.5) * 0.16, y, (iz - 4.5) * 0.16);
-        dummy.updateMatrix();
-        mesh.setMatrixAt(idx++, dummy.matrix);
-      }
-    }
-    mesh.instanceMatrix.needsUpdate = true;
-  }, [explodedMode, showSolderBumps]);
-
-  useEffect(() => {
-    const mesh = padRef.current;
-    if (!mesh) return;
-    const dummy = new THREE.Object3D();
-    const y = explodedMode ? -0.31 : -0.095;
-    let idx = 0;
-    for (let ix = 0; ix < 12; ix++) {
-      for (let iz = 0; iz < 12; iz++) {
-        dummy.position.set((ix - 5.5) * 0.24, y, (iz - 5.5) * 0.24);
-        dummy.updateMatrix();
-        mesh.setMatrixAt(idx++, dummy.matrix);
-      }
-    }
-    mesh.instanceMatrix.needsUpdate = true;
-  }, [explodedMode, showLgaPads]);
-
-  return (
-    <>
-      {showSolderBumps && (
-        <instancedMesh ref={bumpRef} args={[undefined, undefined, bumpCount]} name="tianedge__instanced-solder-bumps">
-          <cylinderGeometry args={[0.024, 0.024, 0.022, 8]} />
-          <meshStandardMaterial color="#f59e0b" metalness={0.85} roughness={0.25} />
-        </instancedMesh>
-      )}
-      {showLgaPads && (
-        <instancedMesh ref={padRef} args={[undefined, undefined, padCount]} name="tianedge__instanced-lga-pads">
-          <boxGeometry args={[0.11, 0.012, 0.11]} />
-          <meshStandardMaterial color="#fbbf24" metalness={0.9} roughness={0.22} />
-        </instancedMesh>
-      )}
-    </>
-  );
-}
 
 interface SignalPathsProps {
   mode: VisualizationMode;

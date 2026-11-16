@@ -139,6 +139,72 @@ class MeshBuilder:
                 normal,
             )
 
+    def add_cylinder(
+        self,
+        cx: float,
+        cy: float,
+        cz: float,
+        radius: float,
+        height: float,
+        segments: int = 8,
+    ) -> None:
+        """Watertight vertical prism approximating a cylinder (solder bumps, fiducials, vias)."""
+        y0, y1 = cy - height * 0.5, cy + height * 0.5
+        ring = [
+            (cx + radius * math.cos(2 * math.pi * i / segments), cz + radius * math.sin(2 * math.pi * i / segments))
+            for i in range(segments)
+        ]
+        for i in range(segments):
+            a = ring[i]
+            b = ring[(i + 1) % segments]
+            self.add_tri((cx, y1, cz), (b[0], y1, b[1]), (a[0], y1, a[1]), (0, 1, 0))
+            self.add_tri((cx, y0, cz), (a[0], y0, a[1]), (b[0], y0, b[1]), (0, -1, 0))
+            mid = 2 * math.pi * (i + 0.5) / segments
+            self.add_quad(
+                (b[0], y0, b[1]),
+                (a[0], y0, a[1]),
+                (a[0], y1, a[1]),
+                (b[0], y1, b[1]),
+                (math.cos(mid), 0.0, math.sin(mid)),
+            )
+
+    def add_frame(
+        self,
+        cx: float,
+        cy: float,
+        cz: float,
+        sx: float,
+        sy: float,
+        sz: float,
+        width: float,
+    ) -> None:
+        """Rectangular ring of four bars (seal rings, core outlines, interconnect rings)."""
+        self.add_box(cx, cy, cz + (sz - width) * 0.5, sx, sy, width)
+        self.add_box(cx, cy, cz - (sz - width) * 0.5, sx, sy, width)
+        self.add_box(cx + (sx - width) * 0.5, cy, cz, width, sy, sz - 2 * width)
+        self.add_box(cx - (sx - width) * 0.5, cy, cz, width, sy, sz - 2 * width)
+
+    def add_grid(
+        self,
+        cx: float,
+        cy: float,
+        cz: float,
+        sx: float,
+        sz: float,
+        nx: int,
+        nz: int,
+        height: float,
+        gap: float,
+    ) -> None:
+        """nx * nz array of cells filling an sx * sz footprint (SRAM sub-arrays, ROM, PLA planes)."""
+        cw = (sx - gap * (nx - 1)) / nx
+        cd = (sz - gap * (nz - 1)) / nz
+        for ix in range(nx):
+            for iz in range(nz):
+                x = cx - sx * 0.5 + cw * 0.5 + ix * (cw + gap)
+                z = cz - sz * 0.5 + cd * 0.5 + iz * (cd + gap)
+                self.add_box(x, cy, z, cw, height, cd)
+
     def triangle_count(self) -> int:
         return len(self.indices) // 3
 
@@ -157,6 +223,8 @@ def pack_glb(
     total_tris = 0
 
     for node_name, builder, mat_idx in nodes_spec:
+        if len(builder.positions) >= 65535:
+            raise SystemExit(f"ERROR: {node_name} exceeds uint16 index range ({len(builder.positions)} vertices)")
         total_tris += builder.triangle_count()
 
         # Positions
@@ -273,7 +341,7 @@ def pack_glb(
         bin_blob += b"\x00"
 
     gltf = {
-        "asset": {"version": "2.0", "generator": "TIANEDGE Geometry Generator v1"},
+        "asset": {"version": "2.0", "generator": "TIANEDGE Geometry Generator v2"},
         "scene": 0,
         "scenes": [{"name": "TIANEDGE_Scene", "nodes": list(range(len(nodes)))}],
         "nodes": nodes,
@@ -368,170 +436,382 @@ def make_materials() -> list[dict[str, Any]]:
                 "roughnessFactor": 0.42,
             },
         },
+        # 7: MLCC ceramic capacitor body
+        {
+            "name": "CeramicMLCC",
+            "pbrMetallicRoughness": {
+                "baseColorFactor": [0.46, 0.36, 0.24, 1.0],
+                "metallicFactor": 0.05,
+                "roughnessFactor": 0.62,
+            },
+        },
+        # 8: Laser marking / dark oxide
+        {
+            "name": "LaserMark",
+            "pbrMetallicRoughness": {
+                "baseColorFactor": [0.30, 0.33, 0.38, 1.0],
+                "metallicFactor": 0.55,
+                "roughnessFactor": 0.55,
+            },
+        },
+        # 9: Amber logic (control / sequencing)
+        {
+            "name": "AmberLogic",
+            "pbrMetallicRoughness": {
+                "baseColorFactor": [0.85, 0.55, 0.12, 1.0],
+                "metallicFactor": 0.30,
+                "roughnessFactor": 0.35,
+            },
+        },
     ]
 
 
 def build_package_glb(materials: list[dict[str, Any]]) -> tuple[bytes, dict[str, Any]]:
     specs: list[tuple[str, MeshBuilder, int]] = []
 
-    # pkg-ihs
+    # ---- pkg-ihs: nickel-plated copper lid -------------------------------------------------
     ihs = MeshBuilder()
-    ihs.add_octagonal_prism(0.0, 0.31, 0.0, 2.75, 0.12, 2.75, 0.22)
-    ihs.add_octagonal_prism(0.0, 0.23, 0.0, 3.02, 0.05, 3.02, 0.18)
+    ihs.add_octagonal_prism(0.0, 0.31, 0.0, 2.75, 0.12, 2.75, 0.22)  # main plateau
+    ihs.add_octagonal_prism(0.0, 0.23, 0.0, 3.02, 0.05, 3.02, 0.18)  # sealant skirt / flange
+    ihs.add_octagonal_prism(0.0, 0.374, 0.0, 2.25, 0.008, 2.25, 0.16)  # machined top land
+    # Flange "ears" at the four sides where the retention mechanism clamps.
+    for sx, sz, w, d in ((0.0, 1.47, 0.9, 0.12), (0.0, -1.47, 0.9, 0.12), (1.47, 0.0, 0.12, 0.9), (-1.47, 0.0, 0.12, 0.9)):
+        ihs.add_box(sx, 0.262, sz, w, 0.014, d)
     specs.append(("tianedge__pkg-ihs__lid", ihs, 0))
 
-    # pkg-silicon-die
+    marking = MeshBuilder()
+    # Laser-etched product lines (generic, no vendor branding) and a 2D matrix code.
+    for i, length in enumerate((1.2, 0.95, 0.7)):
+        marking.add_box(-0.35 + (1.2 - length) * -0.5, 0.379, -0.55 + i * 0.13, length, 0.003, 0.06)
+    marking.add_grid(0.72, 0.379, 0.62, 0.32, 0.32, 6, 6, 0.003, 0.012)
+    specs.append(("tianedge__pkg-ihs__marking", marking, 8))
+
+    pin1 = MeshBuilder()
+    pin1.add_tri((-1.05, 0.38, -1.05), (-0.9, 0.38, -1.05), (-1.05, 0.38, -0.9), (0, 1, 0))
+    pin1.add_tri((-1.05, 0.376, -1.05), (-1.05, 0.376, -0.9), (-0.9, 0.376, -1.05), (0, -1, 0))
+    specs.append(("tianedge__pkg-ihs__pin1-mark", pin1, 3))
+
+    # ---- pkg-silicon-die: flip-chip die with seal ring -------------------------------------
     die = MeshBuilder()
     die.add_box(0.0, 0.12, 0.0, 1.92, 0.06, 1.92)
     specs.append(("tianedge__pkg-silicon-die__slab", die, 1))
 
-    # pkg-substrate
+    seal = MeshBuilder()
+    seal.add_frame(0.0, 0.151, 0.0, 1.9, 0.004, 1.9, 0.035)
+    seal.add_frame(0.0, 0.151, 0.0, 1.8, 0.004, 1.8, 0.015)
+    specs.append(("tianedge__pkg-silicon-die__seal-ring", seal, 3))
+
+    # ---- pkg-substrate: organic build-up substrate ----------------------------------------
     sub = MeshBuilder()
-    sub.add_box(0.0, 0.0, 0.0, 3.45, 0.11, 3.45)
-    # 4 corner SMD decoupling bank frames
-    for sx in (-1.35, 1.35):
-        for sz in (-1.35, 1.35):
-            sub.add_box(sx, 0.075, sz, 0.32, 0.04, 0.16)
+    sub.add_octagonal_prism(0.0, 0.0, 0.0, 3.45, 0.11, 3.45, 0.06)
+    # Underfill fillet around the die footprint.
+    sub.add_frame(0.0, 0.07, 0.0, 2.04, 0.03, 2.04, 0.07)
     specs.append(("tianedge__pkg-substrate__board", sub, 2))
 
-    # pkg-solder-bumps (carrier matrix base; instances rendered procedurally too)
+    caps = MeshBuilder()
+    terminals = MeshBuilder()
+    # MLCC decoupling capacitors in the strip between the IHS flange and substrate edge.
+    for i in range(11):
+        t = -1.25 + i * 0.25
+        for x, z, along_x in ((t, 1.62, True), (t, -1.62, True), (1.62, t, False), (-1.62, t, False)):
+            bx, bz = (0.08, 0.05) if along_x else (0.05, 0.08)
+            caps.add_box(x, 0.075, z, bx, 0.04, bz)
+            off = 0.05
+            tx, tz = (off, 0.0) if along_x else (0.0, off)
+            terminals.add_box(x - tx, 0.075, z - tz, 0.022 if along_x else 0.052, 0.042, 0.052 if along_x else 0.022)
+            terminals.add_box(x + tx, 0.075, z + tz, 0.022 if along_x else 0.052, 0.042, 0.052 if along_x else 0.022)
+    # Fiducials and pin-1 triangle on the substrate corners.
+    for fx, fz in ((1.6, 1.6), (-1.6, 1.6), (1.6, -1.6)):
+        terminals.add_cylinder(fx, 0.057, fz, 0.035, 0.006, 12)
+    terminals.add_tri((-1.68, 0.058, -1.68), (-1.48, 0.058, -1.68), (-1.68, 0.058, -1.48), (0, 1, 0))
+    specs.append(("tianedge__pkg-substrate__mlcc", caps, 7))
+    specs.append(("tianedge__pkg-substrate__terminals", terminals, 3))
+
+    # ---- pkg-solder-bumps: 16 x 16 C4 flip-chip bump array --------------------------------
     bumps = MeshBuilder()
-    for gx in range(-3, 4):
-        for gz in range(-3, 4):
-            bumps.add_box(gx * 0.24, 0.065, gz * 0.24, 0.07, 0.035, 0.07)
+    pitch = 0.11
+    for gx in range(16):
+        for gz in range(16):
+            bumps.add_cylinder((gx - 7.5) * pitch, 0.072, (gz - 7.5) * pitch, 0.03, 0.034, 8)
     specs.append(("tianedge__pkg-solder-bumps__array", bumps, 3))
 
-    # pkg-electrical-contacts (LGA bottom contact matrix + perimeter ring)
+    # ---- pkg-electrical-contacts: LGA land grid (26 x 26 minus centre cavity) --------------
     lga = MeshBuilder()
-    lga.add_box(0.0, -0.072, 0.0, 3.15, 0.025, 3.15)
-    for edge in (-1.45, 1.45):
-        lga.add_box(edge, -0.088, 0.0, 0.12, 0.015, 3.0)
-        lga.add_box(0.0, -0.088, edge, 2.8, 0.015, 0.12)
+    lpitch = 0.12
+    for gx in range(26):
+        for gz in range(26):
+            if 9 <= gx <= 16 and 9 <= gz <= 16:
+                continue  # central cavity holds the land-side capacitors
+            lga.add_box((gx - 12.5) * lpitch, -0.061, (gz - 12.5) * lpitch, 0.078, 0.012, 0.078)
     specs.append(("tianedge__pkg-electrical-contacts__pads", lga, 3))
+
+    lsc = MeshBuilder()
+    for ix in range(4):
+        for iz in range(3):
+            lsc.add_box(-0.33 + ix * 0.22, -0.075, -0.25 + iz * 0.25, 0.12, 0.04, 0.07)
+    specs.append(("tianedge__pkg-electrical-contacts__land-side-caps", lsc, 7))
 
     return pack_glb(specs, materials)
 
 
+# Footprint of one core tile; cores 1..3 get a replica of core 0's block layout so the die
+# reads as a 4-core floorplan even though only core 0 carries selectable sub-blocks.
+CORE0_LAYOUT: list[tuple[float, float, float, float, float]] = [
+    # dx, dz (offset from quadrant centre), sx, sz, height
+    (-0.03, -0.03, 0.22, 0.18, 0.05),   # ALU
+    (-0.10, 0.20, 0.22, 0.14, 0.06),    # control unit
+    (0.15, 0.00, 0.16, 0.18, 0.04),     # registers
+    (-0.17, -0.13, 0.16, 0.14, 0.05),   # decoder
+    (0.20, 0.20, 0.18, 0.14, 0.05),     # LSU
+    (-0.27, -0.21, 0.18, 0.16, 0.05),   # L1I
+    (0.30, 0.20, 0.16, 0.16, 0.05),     # L1D
+    (-0.31, 0.10, 0.16, 0.34, 0.035),   # L2
+]
+
+
 def build_die_core_glb(materials: list[dict[str, Any]]) -> tuple[bytes, dict[str, Any]]:
     specs: list[tuple[str, MeshBuilder, int]] = []
-
-    # Silicon die regional zones (Layer 2)
-    # 4 core quadrant base tiles
     quadrants = [(-0.45, -0.45), (0.45, -0.45), (-0.45, 0.45), (0.45, 0.45)]
+
+    # ---- die-cpu-cores: four replicated core tiles ----------------------------------------
     cpu_cores = MeshBuilder()
     for qx, qz in quadrants:
         cpu_cores.add_box(qx, 0.155, qz, 0.72, 0.025, 0.62)
     specs.append(("tianedge__die-cpu-cores__tiles", cpu_cores, 6))
 
+    core_outline = MeshBuilder()
+    replicas = MeshBuilder()
+    for qi, (qx, qz) in enumerate(quadrants):
+        core_outline.add_frame(qx, 0.169, qz, 0.72, 0.004, 0.62, 0.012)
+        if qi == 0:
+            continue
+        for dx, dz, sx, sz, h in CORE0_LAYOUT:
+            replicas.add_box(qx + dx, 0.168 + h * 0.25, qz + dz, sx, h * 0.5, sz)
+    specs.append(("tianedge__die-cpu-cores__outline", core_outline, 3))
+    specs.append(("tianedge__die-cpu-cores__replica-blocks", replicas, 6))
+
+    # ---- die-cache-regions: shared LLC banks split into SRAM sub-arrays --------------------
     cache_regions = MeshBuilder()
-    cache_regions.add_box(0.0, 0.16, 0.25, 1.56, 0.028, 0.34)
-    cache_regions.add_box(0.62, 0.16, -0.25, 0.36, 0.028, 0.56)
+    cache_regions.add_box(0.0, 0.16, 0.25, 1.56, 0.02, 0.34)
+    cache_regions.add_box(0.62, 0.16, -0.25, 0.36, 0.02, 0.56)
+    cache_regions.add_grid(0.62, 0.172, -0.25, 0.32, 0.52, 3, 6, 0.006, 0.012)
     specs.append(("tianedge__die-cache-regions__banks", cache_regions, 5))
 
+    # ---- die-execution-units: core-0 execution zone ----------------------------------------
     exec_zone = MeshBuilder()
-    exec_zone.add_box(-0.45, 0.165, -0.45, 0.66, 0.022, 0.56)
+    exec_zone.add_box(-0.45, 0.165, -0.45, 0.66, 0.012, 0.56)
     specs.append(("tianedge__die-execution-units__zone", exec_zone, 6))
 
+    # ---- die-interconnect: ring bus with ring stops + mesh crossbar -----------------------
     interconnect = MeshBuilder()
-    interconnect.add_box(0.0, 0.168, 0.0, 1.72, 0.016, 0.08)
-    interconnect.add_box(0.0, 0.168, 0.0, 0.08, 0.016, 1.62)
+    interconnect.add_box(0.0, 0.168, 0.0, 1.72, 0.012, 0.06)
+    interconnect.add_box(0.0, 0.168, 0.0, 0.06, 0.012, 1.62)
+    interconnect.add_frame(0.0, 0.17, 0.0, 1.78, 0.01, 1.66, 0.03)
+    for x in (-0.86, 0.0, 0.86):
+        for z in (-0.8, 0.0, 0.8):
+            interconnect.add_box(x, 0.178, z, 0.07, 0.022, 0.07)  # ring stops / routers
     specs.append(("tianedge__die-interconnect__ring", interconnect, 3))
 
+    # ---- die-memory-controller: IMC with four DDR channel PHY stripes ----------------------
     mc = MeshBuilder()
-    mc.add_box(0.0, 0.165, 0.72, 1.32, 0.045, 0.20)
+    mc.add_box(0.0, 0.16, 0.72, 1.32, 0.03, 0.20)
+    for ch in range(4):
+        mc.add_box(-0.495 + ch * 0.33, 0.18, 0.72, 0.28, 0.012, 0.14)
+        mc.add_grid(-0.495 + ch * 0.33, 0.19, 0.76, 0.24, 0.05, 6, 1, 0.008, 0.012)
     specs.append(("tianedge__die-memory-controller__block", mc, 5))
 
+    # ---- die-io-controller: SerDes / PCIe-style lanes --------------------------------------
     ioc = MeshBuilder()
-    ioc.add_box(0.0, 0.165, -0.76, 1.24, 0.042, 0.16)
+    ioc.add_box(0.0, 0.16, -0.76, 1.24, 0.03, 0.16)
+    for lane in range(16):
+        ioc.add_box(-0.56 + lane * 0.0747, 0.18, -0.76, 0.045, 0.012, 0.12)
     specs.append(("tianedge__die-io-controller__block", ioc, 6))
 
-    # Processing Core blocks in primary Core 0 zone (Layer 3)
+    # ---- core-alu: 32-bit datapath drawn as 8 bit-slices + carry chain + flags -------------
     alu = MeshBuilder()
-    alu.add_octagonal_prism(-0.48, 0.22, -0.48, 0.22, 0.075, 0.18, 0.045)
-    alu.add_box(-0.48, 0.25, -0.48, 0.14, 0.025, 0.08)
+    alu.add_octagonal_prism(-0.48, 0.205, -0.48, 0.22, 0.03, 0.18, 0.03)
+    for i in range(8):
+        alu.add_box(-0.567 + i * 0.025, 0.235, -0.495, 0.018, 0.03, 0.11)  # bit slices
+    alu.add_box(-0.48, 0.255, -0.495, 0.2, 0.01, 0.012)  # carry-lookahead chain
+    alu.add_box(-0.48, 0.232, -0.415, 0.16, 0.025, 0.035)  # result mux
     specs.append(("tianedge__core-alu__unit", alu, 4))
 
-    cu = MeshBuilder()
-    cu.add_box(-0.55, 0.23, -0.25, 0.22, 0.08, 0.14)
-    specs.append(("tianedge__core-control-unit__sequencer", cu, 3))
+    alu_flags = MeshBuilder()
+    for i in range(4):  # Z N C V flag latches
+        alu_flags.add_box(-0.54 + i * 0.04, 0.228, -0.555, 0.028, 0.022, 0.022)
+    specs.append(("tianedge__core-alu__flags", alu_flags, 9))
 
+    # ---- core-control-unit: sequencer + microcode ROM + state register --------------------
+    cu = MeshBuilder()
+    cu.add_box(-0.55, 0.205, -0.25, 0.22, 0.03, 0.14)
+    cu.add_grid(-0.58, 0.228, -0.25, 0.13, 0.11, 4, 3, 0.016, 0.008)  # microcode ROM
+    cu.add_box(-0.475, 0.24, -0.25, 0.05, 0.04, 0.1)  # state register / sequencer
+    specs.append(("tianedge__core-control-unit__sequencer", cu, 9))
+
+    # ---- core-registers: R0..R7, four nibble cells each -------------------------------------
     regs = MeshBuilder()
-    for i in range(4):
-        regs.add_box(-0.30, 0.215, -0.52 + i * 0.045, 0.16, 0.055, 0.032)
+    regs.add_box(-0.30, 0.198, -0.45, 0.17, 0.016, 0.2)
+    for r in range(8):
+        for c in range(4):
+            regs.add_box(-0.36 + c * 0.04, 0.215, -0.535 + r * 0.024, 0.034, 0.018, 0.018)
     specs.append(("tianedge__core-registers__bank", regs, 4))
 
+    # ---- core-instruction-decoder: PLA with AND / OR planes --------------------------------
     dec = MeshBuilder()
-    dec.add_box(-0.62, 0.215, -0.58, 0.16, 0.06, 0.14)
+    dec.add_box(-0.62, 0.2, -0.58, 0.16, 0.03, 0.14)
+    dec.add_grid(-0.655, 0.222, -0.58, 0.07, 0.12, 4, 6, 0.014, 0.006)  # AND plane
+    dec.add_grid(-0.575, 0.222, -0.58, 0.05, 0.12, 3, 6, 0.014, 0.006)  # OR plane
     specs.append(("tianedge__core-instruction-decoder__pla", dec, 5))
 
+    # ---- core-execution-units: integer / FP / SIMD pipes -----------------------------------
     core_exec = MeshBuilder()
-    core_exec.add_box(-0.46, 0.205, -0.42, 0.26, 0.035, 0.24)
+    core_exec.add_box(-0.46, 0.192, -0.42, 0.26, 0.012, 0.24)
+    for lane in range(3):
+        core_exec.add_box(-0.46, 0.2, -0.5 + lane * 0.08, 0.24, 0.006, 0.05)
     specs.append(("tianedge__core-execution-units__cluster", core_exec, 6))
 
+    # ---- core-load-store-unit: AGU + load / store queues -----------------------------------
     lsu = MeshBuilder()
-    lsu.add_box(-0.25, 0.215, -0.25, 0.18, 0.06, 0.14)
+    lsu.add_box(-0.25, 0.2, -0.25, 0.18, 0.03, 0.14)
+    lsu.add_box(-0.3, 0.235, -0.25, 0.06, 0.04, 0.1)  # AGU
+    for e in range(6):
+        lsu.add_box(-0.22 + (e % 2) * 0.05, 0.226, -0.3 + (e // 2) * 0.05, 0.04, 0.022, 0.035)
     specs.append(("tianedge__core-load-store-unit__agu", lsu, 4))
 
-    # Memory Hierarchy blocks (Layer 4)
-    l1i = MeshBuilder()
-    l1i.add_box(-0.72, 0.215, -0.66, 0.18, 0.055, 0.16)
-    specs.append(("tianedge__mem-l1-icache__sram", l1i, 5))
+    # ---- memory hierarchy: SRAM macros with sense-amp strips --------------------------------
+    def sram_macro(cx: float, cz: float, sx: float, sz: float, nx: int, nz: int, base_y: float) -> MeshBuilder:
+        mb = MeshBuilder()
+        mb.add_box(cx, base_y, cz, sx, 0.02, sz)
+        mb.add_grid(cx, base_y + 0.018, cz - sz * 0.06, sx * 0.9, sz * 0.75, nx, nz, 0.016, 0.008)
+        mb.add_box(cx, base_y + 0.016, cz + sz * 0.41, sx * 0.9, 0.012, sz * 0.1)  # sense amps
+        return mb
 
-    l1d = MeshBuilder()
-    l1d.add_box(-0.14, 0.215, -0.25, 0.16, 0.055, 0.16)
-    specs.append(("tianedge__mem-l1-dcache__sram", l1d, 5))
-
-    l2 = MeshBuilder()
-    l2.add_box(-0.76, 0.195, -0.35, 0.16, 0.045, 0.34)
-    specs.append(("tianedge__mem-l2-cache__sram", l2, 5))
+    specs.append(("tianedge__mem-l1-icache__sram", sram_macro(-0.72, -0.66, 0.18, 0.16, 3, 3, 0.2), 5))
+    specs.append(("tianedge__mem-l1-dcache__sram", sram_macro(-0.14, -0.25, 0.16, 0.16, 3, 3, 0.2), 5))
+    specs.append(("tianedge__mem-l2-cache__sram", sram_macro(-0.76, -0.35, 0.16, 0.34, 2, 6, 0.185), 5))
 
     l3 = MeshBuilder()
     for s in range(4):
-        l3.add_box(-0.54 + s * 0.36, 0.18, 0.25, 0.31, 0.038, 0.26)
+        sx = -0.54 + s * 0.36
+        l3.add_box(sx, 0.175, 0.25, 0.31, 0.012, 0.26)
+        l3.add_grid(sx, 0.188, 0.22, 0.29, 0.18, 3, 2, 0.016, 0.012)
+        l3.add_box(sx, 0.186, 0.355, 0.12, 0.012, 0.03)  # slice controller / CBo
     specs.append(("tianedge__mem-l3-cache__slices", l3, 5))
 
     regfile = MeshBuilder()
-    regfile.add_box(-0.30, 0.23, -0.45, 0.15, 0.025, 0.16)
+    regfile.add_grid(-0.30, 0.232, -0.45, 0.14, 0.15, 4, 4, 0.008, 0.008)
     specs.append(("tianedge__mem-register-file__cells", regfile, 3))
 
     main_if = MeshBuilder()
     for p in range(-4, 5):
-        main_if.add_box(p * 0.14, 0.155, 0.87, 0.08, 0.032, 0.10)
+        main_if.add_box(p * 0.14, 0.152, 0.87, 0.08, 0.024, 0.10)
+        main_if.add_cylinder(p * 0.14, 0.168, 0.87, 0.022, 0.012, 8)
     specs.append(("tianedge__mem-main-interface__phy", main_if, 3))
 
     comm_mem_if = MeshBuilder()
-    comm_mem_if.add_box(0.0, 0.175, 0.45, 0.18, 0.028, 0.32)
+    comm_mem_if.add_box(0.0, 0.172, 0.45, 0.18, 0.016, 0.32)
+    for lane in range(6):
+        comm_mem_if.add_box(-0.06 + lane * 0.024, 0.183, 0.45, 0.012, 0.006, 0.3)
     specs.append(("tianedge__comm-memory-interface__bridge", comm_mem_if, 4))
 
     return pack_glb(specs, materials)
 
 
 def build_logic_foundation_glb(materials: list[dict[str, Any]]) -> tuple[bytes, dict[str, Any]]:
+    """Enlarged, not-to-scale didactic pods; each primitive gets a recognisable silhouette."""
     specs: list[tuple[str, MeshBuilder, int]] = []
     spacing = 0.48
-    start_x = -spacing * 3
+    xs = [-spacing * 3 + i * spacing for i in range(7)]
+    base_y = 0.18
 
-    ids_and_roles = [
-        ("logic-transistors", "mosfet", 4),
-        ("logic-gates", "nand_nor_xor", 3),
-        ("logic-flip-flops", "dff", 5),
-        ("logic-multiplexers", "mux", 4),
-        ("logic-adders", "full_adder", 3),
-        ("logic-combinational", "pla_matrix", 6),
-        ("logic-sequential", "fsm_stage", 5),
-    ]
+    def pod_base(mb: MeshBuilder, bx: float) -> None:
+        mb.add_box(bx, base_y, 0.0, 0.36, 0.03, 0.44)
 
-    for idx, (comp_id, role, mat_idx) in enumerate(ids_and_roles):
-        bx = start_x + idx * spacing
-        mb = MeshBuilder()
-        # Base educational pod block + gate silhouette pins
-        mb.add_box(bx, 0.22, 0.0, 0.32, 0.10, 0.42)
-        mb.add_box(bx, 0.30, 0.0, 0.16, 0.06, 0.20)
-        # Input / output terminals
-        mb.add_box(bx - 0.18, 0.22, -0.10, 0.08, 0.03, 0.04)
-        mb.add_box(bx - 0.18, 0.22, 0.10, 0.08, 0.03, 0.04)
-        mb.add_box(bx + 0.18, 0.22, 0.0, 0.08, 0.03, 0.05)
-        specs.append((f"tianedge__{comp_id}__{role}", mb, mat_idx))
+    # logic-transistors: FinFET (substrate, 3 fins, wrap-around gate, source/drain, contacts)
+    bx = xs[0]
+    fet = MeshBuilder()
+    pod_base(fet, bx)
+    for f in range(3):
+        fet.add_box(bx - 0.06 + f * 0.06, base_y + 0.05, 0.0, 0.022, 0.07, 0.36)
+    specs.append(("tianedge__logic-transistors__mosfet", fet, 6))
+    gate = MeshBuilder()
+    gate.add_box(bx, base_y + 0.065, 0.0, 0.22, 0.11, 0.06)
+    for sz in (-0.13, 0.13):
+        gate.add_box(bx, base_y + 0.1, sz, 0.16, 0.025, 0.05)  # source / drain contacts
+    gate.add_box(bx, base_y + 0.13, 0.0, 0.05, 0.03, 0.04)  # gate contact
+    specs.append(("tianedge__logic-transistors__gate-stack", gate, 3))
+
+    # logic-gates: AND / OR / XOR bodies with input and output pins
+    bx = xs[1]
+    gates = MeshBuilder()
+    pod_base(gates, bx)
+    for i, z in enumerate((-0.13, 0.0, 0.13)):
+        gates.add_box(bx - 0.02, base_y + 0.05, z, 0.12, 0.07, 0.09)
+        gates.add_cylinder(bx + 0.04, base_y + 0.05, z, 0.045, 0.07, 10)
+        if i == 2:
+            gates.add_box(bx - 0.095, base_y + 0.05, z, 0.012, 0.07, 0.09)  # XOR extra arc
+        for dz in (-0.025, 0.025):
+            gates.add_box(bx - 0.13, base_y + 0.04, z + dz, 0.06, 0.012, 0.012)
+        gates.add_box(bx + 0.13, base_y + 0.04, z, 0.06, 0.012, 0.012)
+    specs.append(("tianedge__logic-gates__nand_nor_xor", gates, 3))
+
+    # logic-flip-flops: master / slave latches with clock input and feedback
+    bx = xs[2]
+    ff = MeshBuilder()
+    pod_base(ff, bx)
+    ff.add_box(bx - 0.07, base_y + 0.06, 0.0, 0.11, 0.09, 0.28)
+    ff.add_box(bx + 0.07, base_y + 0.06, 0.0, 0.11, 0.09, 0.28)
+    ff.add_box(bx, base_y + 0.115, 0.0, 0.2, 0.012, 0.03)  # master -> slave link
+    ff.add_box(bx - 0.07, base_y + 0.03, -0.17, 0.03, 0.03, 0.06)  # clock pin
+    ff.add_frame(bx + 0.07, base_y + 0.12, 0.0, 0.13, 0.01, 0.3, 0.012)  # feedback loop
+    specs.append(("tianedge__logic-flip-flops__dff", ff, 5))
+
+    # logic-multiplexers: stepped trapezoid with select line
+    bx = xs[3]
+    mux = MeshBuilder()
+    pod_base(mux, bx)
+    for step in range(5):
+        mux.add_box(bx - 0.08 + step * 0.04, base_y + 0.06, 0.0, 0.042, 0.09, 0.34 - step * 0.05)
+    for z in (-0.12, -0.04, 0.04, 0.12):
+        mux.add_box(bx - 0.14, base_y + 0.05, z, 0.05, 0.012, 0.012)
+    mux.add_box(bx + 0.15, base_y + 0.05, 0.0, 0.05, 0.012, 0.012)
+    mux.add_box(bx, base_y + 0.03, 0.19, 0.012, 0.012, 0.06)  # select
+    specs.append(("tianedge__logic-multiplexers__mux", mux, 4))
+
+    # logic-adders: 4-bit ripple-carry chain of full-adder cells
+    bx = xs[4]
+    add = MeshBuilder()
+    pod_base(add, bx)
+    for i in range(4):
+        z = -0.15 + i * 0.1
+        add.add_box(bx, base_y + 0.05, z, 0.18, 0.07, 0.07)
+        if i < 3:
+            add.add_box(bx + 0.06, base_y + 0.1, z + 0.05, 0.02, 0.012, 0.04)  # carry link
+    specs.append(("tianedge__logic-adders__full_adder", add, 3))
+
+    # logic-combinational: PLA crosspoint matrix
+    bx = xs[5]
+    comb = MeshBuilder()
+    pod_base(comb, bx)
+    comb.add_box(bx, base_y + 0.03, 0.0, 0.3, 0.03, 0.38)
+    for ix in range(5):
+        comb.add_box(bx - 0.12 + ix * 0.06, base_y + 0.055, 0.0, 0.01, 0.01, 0.34)
+    for iz in range(6):
+        comb.add_box(bx, base_y + 0.06, -0.15 + iz * 0.06, 0.28, 0.01, 0.01)
+    for ix in range(5):
+        for iz in range(6):
+            if (ix * 7 + iz * 3) % 3 == 0:
+                comb.add_cylinder(bx - 0.12 + ix * 0.06, base_y + 0.07, -0.15 + iz * 0.06, 0.014, 0.02, 8)
+    specs.append(("tianedge__logic-combinational__pla_matrix", comb, 6))
+
+    # logic-sequential: state register + next-state logic + feedback loop
+    bx = xs[6]
+    seq = MeshBuilder()
+    pod_base(seq, bx)
+    seq.add_box(bx, base_y + 0.06, -0.09, 0.22, 0.09, 0.12)  # next-state logic
+    seq.add_grid(bx, base_y + 0.06, 0.1, 0.22, 0.1, 4, 1, 0.09, 0.012)  # state register bits
+    seq.add_frame(bx, base_y + 0.12, 0.0, 0.3, 0.012, 0.36, 0.014)  # feedback path
+    specs.append(("tianedge__logic-sequential__fsm_stage", seq, 5))
 
     return pack_glb(specs, materials)
 
